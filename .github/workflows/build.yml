@@ -1,0 +1,26 @@
+name: Build
+
+on:
+  push:
+    branches-ignore:
+      - "dependabot/**" # Will still build PRs, but not the branches themself
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+        matrix:
+            os: [windows-latest, ubuntu-latest, macOS-latest]
+
+    steps:
+      - uses: actions/checkout@v4.1.7
+      - name: Fetch all branches and tags
+        run: git fetch --unshallow --prune            
+      - name: Build Cake.CycloneDX
+        uses: cake-build/cake-action@v3
+        with:
+          project-path: build/Build.csproj
+          target: All
+          verbosity: Diagnostic
+          
