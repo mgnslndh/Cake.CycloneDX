@@ -45,7 +45,6 @@ public class CdxDotNet : Tool<CdxDotNetSettings>
 
     public void Run(string path, CdxDotNetSettings settings)
     {
-        ArgumentNullException.ThrowIfNull(path, nameof(path));
         ArgumentNullException.ThrowIfNull(settings, nameof(settings));
         ArgumentException.ThrowIfNullOrEmpty(path, nameof(path));
         var arguments = GetArguments(path, settings);
