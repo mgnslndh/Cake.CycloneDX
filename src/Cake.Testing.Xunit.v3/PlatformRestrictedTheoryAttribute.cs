@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -15,11 +15,20 @@ namespace Cake.Testing.Xunit
         private string _skip;
 #endif
 
+        /// <summary>
+        /// Initializes the static platform family field with the current platform family.
+        /// </summary>
         static PlatformRestrictedTheoryAttribute()
         {
             _family = EnvironmentHelper.GetPlatformFamily();
         }
 
+        /// <summary>
+        /// Initializes the attribute to conditionally skip a theory test based on the current platform family.
+        /// </summary>
+        /// <param name="requiredFamily">The platform family required for the test to run.</param>
+        /// <param name="invert">If true, skips the test on the specified platform family instead of requiring it.</param>
+        /// <param name="reason">Optional custom reason for skipping the test; if not provided, a default message is generated.</param>
         protected PlatformRestrictedTheoryAttribute(
             PlatformFamily requiredFamily,
             bool invert,
