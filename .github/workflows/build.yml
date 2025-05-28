@@ -14,9 +14,13 @@ jobs:
             os: [windows-latest, ubuntu-latest, macOS-latest]
 
     steps:
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v4
       - name: Fetch all branches and tags
-        run: git fetch --unshallow --prune            
+        run: git fetch --unshallow --prune
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+            dotnet-version: 9.0.x            
       - name: Build Cake.CycloneDX
         uses: cake-build/cake-action@v3
         with:
