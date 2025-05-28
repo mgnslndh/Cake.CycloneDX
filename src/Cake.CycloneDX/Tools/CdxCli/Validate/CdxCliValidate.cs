@@ -11,7 +11,7 @@ namespace Cake.CycloneDX.Tools.CdxCli.Validate
         }
 
         /// <summary>
-        /// Lists available packages with their versions.
+        /// Validates a CycloneDX BOM file using the CycloneDX CLI tool.
         /// </summary>
         /// <param name="inputFilePath">The input BOM filename.</param>
         /// <param name="settings">The settings.</param>
