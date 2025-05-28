@@ -15,7 +15,8 @@ namespace Cake.CycloneDX.Dogfooding.Build
     {
         public override void Setup(BuildContext context, ISetupContext info)
         {
-            var toolsPath = context.Environment.WorkingDirectory.Combine("tools");
+            var relativeToolsPath = new DirectoryPath(context.Configuration.GetValue("Paths_Tools"));
+            var toolsPath = relativeToolsPath.MakeAbsolute(context.Environment);
 
             if (!context.DirectoryExists(toolsPath))
             {
