@@ -16,7 +16,6 @@ public sealed class GenerateSbomTask : FrostingTask<BuildContext>
             ComponentVersion = "0.0.1",
             ComponentType = CdxComponentClassification.Library,
             Output = context.Environment.ApplicationRoot,
-
         };
         context.CdxDotNet("src/Cake.CycloneDX.sln", settings);
     }

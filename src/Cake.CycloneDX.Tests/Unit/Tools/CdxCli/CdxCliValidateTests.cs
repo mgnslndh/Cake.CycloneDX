@@ -38,7 +38,7 @@ namespace Cake.CycloneDX.Tests.Unit.Tools.CdxCli
 
                 // Then
                 Assert.IsType<CakeException>(result);
-                Assert.Equal("CycloneDX Cli: Could not locate executable.", result?.Message);
+                Assert.Equal("CycloneDX CLI: Could not locate executable.", result?.Message);
             }
 
             [Theory]
