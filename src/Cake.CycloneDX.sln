@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Src", "Src", "{02EA681E-C7D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cake.Testing.Xunit.v3", "Cake.Testing.Xunit.v3\Cake.Testing.Xunit.v3.csproj", "{0CEDC92B-C234-43B4-8DE3-A27B59038FBF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cake.CycloneDX.Dogfooding.Build", "Cake.CycloneDX.Dogfooding.Build\Cake.CycloneDX.Dogfooding.Build.csproj", "{B1DEFE8F-6954-4F88-B06E-B2C27038785A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,10 @@ Global
 		{0CEDC92B-C234-43B4-8DE3-A27B59038FBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0CEDC92B-C234-43B4-8DE3-A27B59038FBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0CEDC92B-C234-43B4-8DE3-A27B59038FBF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1DEFE8F-6954-4F88-B06E-B2C27038785A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1DEFE8F-6954-4F88-B06E-B2C27038785A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1DEFE8F-6954-4F88-B06E-B2C27038785A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1DEFE8F-6954-4F88-B06E-B2C27038785A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
