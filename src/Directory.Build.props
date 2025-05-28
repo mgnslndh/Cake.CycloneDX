@@ -1,0 +1,14 @@
+<Project>
+    <!-- Warnings as errors -->
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    </PropertyGroup>
+  
+    <!-- StyleCop -->
+    <PropertyGroup>
+      <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)CodeAnalysis.ruleset</CodeAnalysisRuleSet>      
+    </PropertyGroup>
+    <ItemGroup>
+      <AdditionalFiles Include="$(MSBuildThisFileDirectory)StyleCop.json" Link="StyleCop.json" />
+    </ItemGroup>
+  </Project>
