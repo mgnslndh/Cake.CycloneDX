@@ -2,6 +2,10 @@
 using Cake.Common.Tools.DotNet.Pack;
 using Cake.Common.Tools.DotNet.Run;
 using Cake.Frosting;
+using Cake.Core;
+using Cake;
+using Cake.Core.IO;
+using NuGet.Packaging;
 
 namespace Build.Tasks;
 
@@ -17,6 +21,9 @@ public sealed class DogfoodTask : FrostingTask<BuildContext>
             Verbosity = DotNetVerbosity.Diagnostic,
             NoBuild = true,
             NoRestore = true,
+            ArgumentCustomization = pab => pab
+                .Append("--")
+                .AppendSwitch("--verbosity", "diagnostic")
         });
     }
 }

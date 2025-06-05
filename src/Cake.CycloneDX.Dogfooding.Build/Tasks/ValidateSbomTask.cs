@@ -1,4 +1,5 @@
 ﻿using Cake.Common.Diagnostics;
+using Cake.Common.IO;
 using Cake.Core.Diagnostics;
 using Cake.Core.IO;
 using Cake.CycloneDX.Tools.CdxCli;
@@ -13,13 +14,15 @@ public sealed class ValidateSbomTask : FrostingTask<BuildContext>
 {
     public override void Run(BuildContext context)
     {
-        FilePath path = context.Environment.ApplicationRoot.CombineWithFilePath("bom.xml");
+        var paths = context.GetFiles(context.Environment.ApplicationRoot.CombineWithFilePath("Merged.cdx").FullPath);
 
         var settings = new CdxCliValidateSettings
         {
-            FailOnErrors = true
+            FailOnErrors = true,
+            InputFormat = CdxCliValidateInputFormat.Xml,
+            InputVersion = CdxCliSpecificationVersion.V1_6
         };
 
-        context.CdxCliValidate(path, settings);
+        context.CdxCliValidate(paths, settings);
     }
 }

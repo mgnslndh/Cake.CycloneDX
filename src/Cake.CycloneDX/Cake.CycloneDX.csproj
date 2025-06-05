@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cake.Core" PrivateAssets="All" />
+    <PackageReference Include="Cake.Core" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>

@@ -10,14 +10,27 @@ namespace Cake.CycloneDX.Tools.CdxCli;
 public static partial class CdxCliAliases
 {
     [CakeMethodAlias]
+    public static void CdxCliValidate(this ICakeContext context, FilePathCollection inputFilePaths, CdxCliValidateSettings? settings = null)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(inputFilePaths, nameof(inputFilePaths));
+        Throw.IfEmpty(inputFilePaths);
+        Throw.IfContainsNullOrWhitespace(inputFilePaths);
+
+        settings ??= new CdxCliValidateSettings();
+
+        foreach (var inputFilePath in inputFilePaths)
+        {
+            CdxCliValidate(context, inputFilePath, settings);
+        }
+    }
+
+    [CakeMethodAlias]
     public static void CdxCliValidate(this ICakeContext context, FilePath inputFilePath, CdxCliValidateSettings? settings = null)
     {
-        if (context == null)
-        {
-            throw new ArgumentNullException(nameof(context));
-        }
-
+        ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(inputFilePath, nameof(inputFilePath));
+        Throw.IfFullPathIsNullOrWhitespace(inputFilePath);
 
         settings ??= new CdxCliValidateSettings();
 

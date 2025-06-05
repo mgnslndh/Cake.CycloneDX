@@ -1,4 +1,5 @@
 ﻿using Cake.Core;
+using Cake.Core.IO;
 using Cake.CycloneDX.Tests.Fixtures.Tools.CdxCli;
 using Cake.Testing;
 using Cake.Testing.Xunit;
@@ -39,6 +40,22 @@ namespace Cake.CycloneDX.Tests.Unit.Tools.CdxCli
                 // Then
                 Assert.IsType<CakeException>(result);
                 Assert.Equal("CycloneDX CLI: Could not locate executable.", result?.Message);
+            }
+
+            [Fact]
+            public void Should_Throw_If_InputFile_Is_Invalid()
+            {
+                // Given
+                var fixture = new CdxCliValidateFixture
+                {
+                    InputFile = new FilePath(string.Empty)
+                };
+
+                // When
+                var result = Record.Exception(() => fixture.Run());
+
+                // Then
+                AssertEx.IsArgumentException(result, "inputFilePath", "The path cannot be an empty string.");
             }
 
             [Theory]

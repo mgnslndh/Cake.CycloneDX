@@ -3,7 +3,7 @@
 namespace Cake.CycloneDX.Tools.CdxCli;
 
 [SuppressMessage("ReSharper", "InconsistentNaming")]
-public enum CdxCliInputVersion
+public enum CdxCliSpecificationVersion
 {
     V1_0,
     V1_1,
