@@ -15,8 +15,6 @@ public static partial class CdxCliAliases
         Throw.IfEmpty(inputFilePaths);
         Throw.IfContainsNullOrWhitespace(inputFilePaths);
 
-        ArgumentNullException.ThrowIfNull(settings);
-
         ArgumentNullException.ThrowIfNull(outputFilePath);
         ArgumentException.ThrowIfNullOrEmpty(outputFilePath.FullPath, nameof(outputFilePath));
 
