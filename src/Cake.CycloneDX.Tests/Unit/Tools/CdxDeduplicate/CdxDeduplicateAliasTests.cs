@@ -71,26 +71,4 @@ public class CdxDeduplicateAliasTests
         AssertXml.IsValidSbom(deduplicated);
         AssertXml.HaveSingleComponentWithPurl(deduplicated, "pkg:nuget/Cake.Core@5.0.0");
     }
-
-    /*
-    [Fact]
-    public void ShouldDeduplicateByTypeNameVersion()
-    {
-        const string xml = """
-                           <bom xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" serialNumber="urn:uuid:dc1e8435-1749-4a34-b81a-17d3a56f9032" version="1" xmlns="http://cyclonedx.org/schema/bom/1.6">
-                           <components>
-                           <component type="library" bom-ref="pkg:nuget/Cake.Core@5.0.0">
-                             <name>Cake.Core</name>
-                             <version>5.0.0</version>
-                           </component>
-                           <component type="library" bom-ref="pkg:nuget/Cake.Core@5.0.0">
-                             <name>Cake.Core</name>
-                             <version>5.0.0</version>
-                           </component>
-                           </components>
-                           </bom>
-                           """;
-        // AssertXml.IsValidSbom(xml);
-    }
-    */
 }
