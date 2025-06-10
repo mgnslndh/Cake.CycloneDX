@@ -13,7 +13,7 @@ namespace Cake.CycloneDX.Tests.Assertions
                 throw new ArgumentException("XML cannot be null or empty.", nameof(xml));
             }
 
-            var result = global::CycloneDX.Xml.Validator.Validate(xml, SpecificationVersion.v1_6);
+            var result = global::CycloneDX.Xml.Validator.Validate(xml, version);
 
             if (result.Valid == false)
             {
