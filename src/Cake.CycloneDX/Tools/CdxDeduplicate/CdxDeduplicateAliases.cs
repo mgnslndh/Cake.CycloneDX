@@ -77,7 +77,7 @@ public static class CdxDeduplicateAliases
         {
             if (group.Count() > 1)
             {
-                context.Log.Warning("Deduplicated {0} components with purl '{0}'", group.Count(), group.Key.Purl);
+                context.Log.Warning("Deduplicated {0} components with purl '{1}'", group.Count(), group.Key.Purl);
             }
         }
 
