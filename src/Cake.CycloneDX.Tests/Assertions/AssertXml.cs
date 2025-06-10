@@ -25,9 +25,15 @@ namespace Cake.CycloneDX.Tests.Assertions
         public static void HaveSingleComponentWithPurl(string xml, string expectedPurl)
         {
             var document = XDocument.Parse(xml, LoadOptions.SetLineInfo | LoadOptions.PreserveWhitespace);
-            XNamespace ns = document.Root!.Name.Namespace;
-
-            var componentsParent = document.Descendants(ns + "components").Single();
+            
+            if (document.Root == null)
+            {
+                throw new XunitException("XML document has no root element.");
+            }
+            
+            XNamespace ns = document.Root.Name.Namespace;
+            var componentsParent = document.Descendants(ns + "components").SingleOrDefault()
+                ?? throw new XunitException("Expected exactly one 'components' element in the SBOM.");
 
             int count = componentsParent
                 .Descendants(ns + "component")
