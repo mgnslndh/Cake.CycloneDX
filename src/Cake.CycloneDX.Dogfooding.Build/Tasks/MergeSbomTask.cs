@@ -29,7 +29,7 @@ public sealed class MergeSbomTask : FrostingTask<BuildContext>
 
         var outputFile = context.Environment.ApplicationRoot.CombineWithFilePath("sbom/Merged.cdx");
 
-        var inputFiles = context.GetFiles(context.Environment.ApplicationRoot.CombineWithFilePath($"*.csproj.cdx").FullPath);
+        var inputFiles = context.GetFiles(context.Environment.ApplicationRoot.CombineWithFilePath($"sbom/*.csproj.cdx").FullPath);
 
         foreach (var project in projects)
         {
