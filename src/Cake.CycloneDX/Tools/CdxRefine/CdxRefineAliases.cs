@@ -1,4 +1,4 @@
-﻿using System.Reflection.Metadata;
+﻿using System.Xml;
 using System.Xml.Linq;
 using Cake.Core;
 using Cake.Core.Annotations;
@@ -60,7 +60,8 @@ public static class CdxRefineAliases
         foreach (var groupSettings in settings)
         {
             var matchedComponents = componentsParent.Elements(ns + "component")
-                .Where(componentElement => groupSettings.Criteria.IsMatch(componentElement));
+                .Where(componentElement => groupSettings.Criteria.IsMatch(componentElement))
+                .ToList();
 
             foreach (var matchedComponent in matchedComponents)
             {
@@ -75,7 +76,7 @@ public static class CdxRefineAliases
 
         if (componentNameElement == null)
         {
-            throw new InvalidOperationException("Required name element is missing");
+            throw new InvalidOperationException($"Component at line {((IXmlLineInfo)component).LineNumber} is missing a <name> element.");
         }
 
         var componentName = componentNameElement.Value;
