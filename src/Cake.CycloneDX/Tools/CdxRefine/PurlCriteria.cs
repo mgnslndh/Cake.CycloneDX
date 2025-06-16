@@ -19,10 +19,7 @@ public class PurlCriteria : ICdxComponentCriteria
 
     public bool IsMatch(XElement element)
     {
-        if (element is null)
-        {
-            throw new ArgumentNullException(nameof(element));
-        }
+        ArgumentNullException.ThrowIfNull(element);
 
         XElement? rootElement = element.Document?.Root;
 
@@ -31,8 +28,6 @@ public class PurlCriteria : ICdxComponentCriteria
             return false;
         }
 
-        // ...rest of method...
-    }
         XNamespace ns = rootElement.GetDefaultNamespace();
 
         XElement? purlElement = element.Element(ns + "purl");
