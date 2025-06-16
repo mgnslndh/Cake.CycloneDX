@@ -14,7 +14,7 @@ public sealed class ValidateSbomTask : FrostingTask<BuildContext>
 {
     public override void Run(BuildContext context)
     {
-        var paths = context.GetFiles(context.Environment.ApplicationRoot.CombineWithFilePath("Merged.cdx").FullPath);
+        var paths = context.GetFiles(context.Environment.ApplicationRoot.CombineWithFilePath("sbom/Merged.cdx").FullPath);
 
         var settings = new CdxCliValidateSettings
         {

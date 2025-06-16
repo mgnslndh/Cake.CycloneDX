@@ -24,7 +24,7 @@ public sealed class GenerateSbomTask : FrostingTask<BuildContext>
             ComponentVersion = projectVersion,
             Framework = "net9.0",
             ComponentType = CdxComponentClassification.Library,
-            Output = context.Environment.ApplicationRoot,
+            Output = context.Environment.ApplicationRoot.Combine("sbom"),
             FileName = $"{projectName}.csproj.cdx",
         };
         context.CdxDotNet($"src/{projectName}/{projectName}.csproj", settings);

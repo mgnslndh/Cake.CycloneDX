@@ -7,6 +7,7 @@ using Cake.CycloneDX.Tools.CdxCli.Merge;
 using Cake.CycloneDX.Tools.CdxCli.Validate;
 using Cake.CycloneDX.Tools.CdxDeduplicate;
 using Cake.CycloneDX.Tools.CdxDotNet;
+using Cake.CycloneDX.Tools.CdxRefine;
 using Cake.Frosting;
 
 namespace Cake.CycloneDX.Dogfooding.Build.Tasks;
@@ -26,7 +27,7 @@ public sealed class MergeSbomTask : FrostingTask<BuildContext>
 
         string[] projects = ["Cake.CycloneDX", "Cake.CycloneDX.Tests"];
 
-        var outputFile = context.Environment.ApplicationRoot.CombineWithFilePath("Merged.cdx");
+        var outputFile = context.Environment.ApplicationRoot.CombineWithFilePath("sbom/Merged.cdx");
 
         var inputFiles = context.GetFiles(context.Environment.ApplicationRoot.CombineWithFilePath($"*.csproj.cdx").FullPath);
 
@@ -37,5 +38,11 @@ public sealed class MergeSbomTask : FrostingTask<BuildContext>
         }
 
         context.CdxDeduplicate(outputFile, outputFile);
+
+        var refineSettings = new CdxRefineSettings()
+            .WithGroupByPurl("Cake", "^pkg:nuget/Cake")
+            .WithGroupByName("Microsoft", "^Microsoft");
+
+        context.CdxRefine(outputFile, outputFile, refineSettings);
     }
 }
