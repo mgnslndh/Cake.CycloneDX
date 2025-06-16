@@ -41,7 +41,8 @@ public sealed class MergeSbomTask : FrostingTask<BuildContext>
 
         var refineSettings = new CdxRefineSettings()
             .WithGroupByPurl("Cake", "^pkg:nuget/Cake")
-            .WithGroupByName("Microsoft", "^Microsoft");
+            .WithGroupByName("Microsoft", "^Microsoft")
+            .WithGroupByName("mgnslndh", @"^Cake\.CycloneDX(\..+)?$");
 
         context.CdxRefine(outputFile, outputFile, refineSettings);
     }
