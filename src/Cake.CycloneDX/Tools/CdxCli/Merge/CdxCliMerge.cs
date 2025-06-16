@@ -85,7 +85,7 @@ public class CdxCliMerge : CdxCliTool<CdxCliMergeSettings>
             builder.AppendSwitchQuoted("--name", settings.Name);
         }
 
-        if (settings.Name is not null)
+        if (settings.Version is not null)
         {
             builder.AppendSwitchQuoted("--version", settings.Version);
         }
