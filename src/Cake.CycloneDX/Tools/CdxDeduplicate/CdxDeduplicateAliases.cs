@@ -69,7 +69,10 @@ public static class CdxDeduplicateAliases
             .Where(c => c.Element(ns + "purl") != null)
             .GroupBy(c => new
             {
-                Purl = c.Element(ns + "purl")?.Value
+                Purl = c.Element(ns + "purl")!
+                         .Value
+                         .Trim()
+                         .ToLowerInvariant()
             })
             .ToList();
 
