@@ -1,4 +1,6 @@
-﻿using System.Xml.Linq;
+﻿using System.Xml;
+using System.Xml.Linq;
+using System.Xml.XPath;
 using CycloneDX;
 using Xunit.Sdk;
 
@@ -43,6 +45,32 @@ namespace Cake.CycloneDX.Tests.Assertions
             if (count != 1)
             {
                 throw new XunitException($"Expected exactly one component with PURL '{expectedPurl}', but found {count}.");
+            }
+        }
+
+        public static void HaveComponentWithAttribute(string xml, string bomRef, string attributeName, string expectedValue)
+        {
+            XDocument doc = XDocument.Parse(xml);
+
+            var ns = new XmlNamespaceManager(new NameTable());
+            ns.AddNamespace("c", "http://cyclonedx.org/schema/bom/1.6");
+
+            string xpath = $"//c:component[@bom-ref='{bomRef}']";
+
+            var component = doc.XPathSelectElement(xpath, ns);
+
+            if (component == null)
+            {
+                throw new XunitException(
+                    $"Expected component with bom-ref '{bomRef}' but it does not exist");
+            }
+
+            string actualValue = component.Attribute(attributeName)?.Value;
+
+            if (expectedValue != actualValue)
+            {
+                throw new XunitException(
+                    $"Expected component with bom-ref '{bomRef}' to have attribute {attributeName} with value '{expectedValue}' but it was '{actualValue ?? "<null>"}");
             }
         }
     }
