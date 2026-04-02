@@ -19,10 +19,10 @@ public static class CdxCliExecutable
     public static string GetFilename(PlatformFamily family, bool is64Bit) =>
         (family, is64Bit) switch
         {
-            (PlatformFamily.Windows, true)  => "cyclonedx-win-x64.exe",
+            (PlatformFamily.Windows, true) => "cyclonedx-win-x64.exe",
             (PlatformFamily.Windows, false) => "cyclonedx-win-x86.exe",
-            (PlatformFamily.Linux,   true)  => "cyclonedx-linux-x64",
-            (PlatformFamily.OSX,     true)  => "cyclonedx-osx-x64",
+            (PlatformFamily.Linux, true) => "cyclonedx-linux-x64",
+            (PlatformFamily.OSX, true) => "cyclonedx-osx-x64",
             _ => throw new CakeException("Unsupported platform.")
         };
 }
