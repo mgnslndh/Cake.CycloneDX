@@ -1,4 +1,5 @@
 using Cake.Core;
+using Cake.CycloneDX.Tools.CdxCli;
 
 namespace Cake.CycloneDX.Dogfooding.Build.Tools;
 
@@ -10,7 +11,6 @@ internal sealed class CycloneDxCliDownloader
 {
     private const string Owner = "CycloneDX";
     private const string Repository = "cyclonedx-cli";
-    private const string Filename = "cyclonedx-win-x64.exe";
 
     private readonly GitHubReleaseDownloader _downloader = new();
 
@@ -28,7 +28,10 @@ internal sealed class CycloneDxCliDownloader
         DownloadBehavior behavior = DownloadBehavior.IfNeeded,
         string? sha256 = null)
     {
-        var asset = new GitHubReleaseAsset(Owner, Repository, version, Filename, sha256);
+        var filename = CdxCliExecutable.GetFilename(
+            context.Environment.Platform.Family,
+            context.Environment.Platform.Is64Bit);
+        var asset = new GitHubReleaseAsset(Owner, Repository, version, filename, sha256);
         _downloader.Download(context, asset, behavior);
     }
 }

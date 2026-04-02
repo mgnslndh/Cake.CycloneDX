@@ -45,21 +45,10 @@ public abstract class CdxCliTool<TSettings> : Tool<TSettings>
     /// <returns>The tool executable name.</returns>
     protected override IEnumerable<string> GetToolExecutableNames()
     {
-        if (Environment.Platform.Family == PlatformFamily.Windows)
-        {
-            return Environment.Platform.Is64Bit ? ["cyclonedx-win-x64.exe", "cyclonedx.exe"] : ["cyclonedx-win-x86.exe", "cyclonedx.exe"];
-        }
-
-        if (Environment.Platform.Family == PlatformFamily.OSX)
-        {
-            return Environment.Platform.Is64Bit ? ["cyclonedx-osx-x64.exe"] : ["cyclonedx.exe"];
-        }
-
-        if (Environment.Platform.Family == PlatformFamily.Linux)
-        {
-            return Environment.Platform.Is64Bit ? ["cyclonedx-linux-x64.exe"] : ["cyclonedx.exe"];
-        }
-
-        throw new CakeException("Unsupported platform.");
+        return
+        [
+            CdxCliExecutable.GetFilename(Environment.Platform.Family, Environment.Platform.Is64Bit),
+            "cyclonedx"
+        ];
     }
 }
