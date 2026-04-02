@@ -157,11 +157,9 @@ public static class CdxRefineAliases
 
         XElement? groupElement = component.Element(ns + "group");
 
-        if (groupElement == null)
-        {
-            groupElement = new XElement(ns + "group");
-            componentNameElement.AddBeforeSelf(groupElement);
-        }
+        groupElement?.Remove();
+        groupElement = new XElement(ns + "group");
+        componentNameElement.AddBeforeSelf(groupElement);
 
         groupElement.Value = groupName;
     }

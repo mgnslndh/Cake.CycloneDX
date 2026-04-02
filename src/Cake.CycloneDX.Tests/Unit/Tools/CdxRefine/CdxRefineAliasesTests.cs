@@ -38,6 +38,39 @@ public class CdxRefineAliasTests
     }
 
     [Fact]
+    public void ShouldMoveGroupBeforeNameWhenGroupAlreadyExistsAfterName()
+    {
+        // <group> is intentionally placed after <name> in the input, violating schema order.
+        // After CdxRefine the <group> element must precede <name>.
+        const string xml = """
+                           <bom xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" serialNumber="urn:uuid:dc1e8435-1749-4a34-b81a-17d3a56f9032" version="1" xmlns="http://cyclonedx.org/schema/bom/1.6">
+                           <metadata />
+                           <components>
+                           <component type="library" bom-ref="pkg:nuget/Cake.Core@5.0.0">
+                             <name>Cake.Core</name>
+                             <group>OldGroup</group>
+                             <purl>pkg:nuget/Cake.Core@5.0.0</purl>
+                           </component>
+                           </components>
+                           </bom>
+                           """;
+
+        var context = Substitute.For<ICakeContext>();
+        var settings = new CdxRefineSettings()
+            .WithGroupByBomRef("NewGroup", "pkg:nuget/Cake.Core@5.0.0");
+        var refined = context.CdxRefine(xml, settings);
+
+        var doc = System.Xml.Linq.XDocument.Parse(refined);
+        System.Xml.Linq.XNamespace ns = doc.Root!.Name.Namespace;
+        var component = doc.Descendants(ns + "component")
+            .Single(e => (string)e.Attribute("bom-ref") == "pkg:nuget/Cake.Core@5.0.0");
+        var childNames = component.Elements().Select(e => e.Name.LocalName).ToList();
+        Assert.True(childNames.IndexOf("group") < childNames.IndexOf("name"),
+            $"Expected <group> before <name> but got order: {string.Join(", ", childNames)}");
+        Assert.Equal("NewGroup", component.Element(ns + "group")!.Value);
+    }
+
+    [Fact]
     public void ShouldThrowCakeExceptionIfInputFileDoesNotExist()
     {
         var environment = FakeEnvironment.CreateUnixEnvironment();
