@@ -77,7 +77,7 @@ public static class CdxDeduplicateAliases
             throw new InvalidOperationException("SBOM does not contain a default namespace on the root element.");
         }
 
-        var componentsParent = document.Descendants(ns + "components").FirstOrDefault();
+        var componentsParent = document.Root?.Element(ns + "components");
         if (componentsParent == null)
         {
             return;
@@ -162,7 +162,7 @@ public static class CdxDeduplicateAliases
             throw new InvalidOperationException("SBOM does not contain a default namespace on the root element.");
         }
 
-        var componentsParent = document.Descendants(ns + "components").FirstOrDefault();
+        var componentsParent = document.Root?.Element(ns + "components");
         if (componentsParent == null)
         {
             return;

@@ -19,4 +19,6 @@ public class CdxDotNetSettings : ToolSettings
     public string? ComponentVersion { get; set; }
     public CdxComponentClassification? ComponentType { get; set; }
     public ExcludeFilterHashSet ExcludeFilters { get; set; } = new();
+    public CdxDotNetSpecificationVersion? SpecVersion { get; set; }
+    public CdxDotNetOutputFormat? OutputFormat { get; set; }
 }

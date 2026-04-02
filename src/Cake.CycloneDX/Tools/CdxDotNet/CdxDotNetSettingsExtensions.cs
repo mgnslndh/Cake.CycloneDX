@@ -2,6 +2,22 @@
 
 public static class CdxDotNetSettingsExtensions
 {
+    public static string ToVersionString(this CdxDotNetSpecificationVersion version)
+    {
+        return version switch
+        {
+            CdxDotNetSpecificationVersion.V1_0 => "1.0",
+            CdxDotNetSpecificationVersion.V1_1 => "1.1",
+            CdxDotNetSpecificationVersion.V1_2 => "1.2",
+            CdxDotNetSpecificationVersion.V1_3 => "1.3",
+            CdxDotNetSpecificationVersion.V1_4 => "1.4",
+            CdxDotNetSpecificationVersion.V1_5 => "1.5",
+            CdxDotNetSpecificationVersion.V1_6 => "1.6",
+            CdxDotNetSpecificationVersion.V1_7 => "1.7",
+            _ => throw new ArgumentOutOfRangeException(nameof(version), version, null)
+        };
+    }
+
     public static CdxDotNetSettings WithComponentName(this CdxDotNetSettings settings, string componentName)
     {
         ArgumentNullException.ThrowIfNull(settings, nameof(settings));
@@ -43,6 +59,28 @@ public static class CdxDotNetSettingsExtensions
         ArgumentNullException.ThrowIfNull(name, nameof(name));
         ArgumentNullException.ThrowIfNull(version, nameof(version));
         settings.ExcludeFilters.Add(name, version);
+        return settings;
+    }
+
+    public static CdxDotNetSettings WithExcludeFilter(this CdxDotNetSettings settings, string name)
+    {
+        ArgumentNullException.ThrowIfNull(settings, nameof(settings));
+        ArgumentNullException.ThrowIfNull(name, nameof(name));
+        settings.ExcludeFilters.Add(name);
+        return settings;
+    }
+
+    public static CdxDotNetSettings WithSpecVersion(this CdxDotNetSettings settings, CdxDotNetSpecificationVersion specVersion)
+    {
+        ArgumentNullException.ThrowIfNull(settings, nameof(settings));
+        settings.SpecVersion = specVersion;
+        return settings;
+    }
+
+    public static CdxDotNetSettings WithOutputFormat(this CdxDotNetSettings settings, CdxDotNetOutputFormat outputFormat)
+    {
+        ArgumentNullException.ThrowIfNull(settings, nameof(settings));
+        settings.OutputFormat = outputFormat;
         return settings;
     }
 }

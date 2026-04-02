@@ -11,4 +11,9 @@ public class ExcludeFilterHashSet : HashSet<ExcludeFilter>
     {
         Add(new ExcludeFilter(name, version));
     }
+
+    public void Add(string name)
+    {
+        Add(new ExcludeFilter(name));
+    }
 }

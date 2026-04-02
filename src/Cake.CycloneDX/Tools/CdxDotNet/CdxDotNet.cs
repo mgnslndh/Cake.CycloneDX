@@ -122,6 +122,16 @@ public class CdxDotNet : Tool<CdxDotNetSettings>
             builder.AppendSwitch("--set-type", settings.ComponentType.ToString());
         }
 
+        if (settings.SpecVersion is not null)
+        {
+            builder.AppendSwitch("--spec-version", settings.SpecVersion.Value.ToVersionString());
+        }
+
+        if (settings.OutputFormat is not null)
+        {
+            builder.AppendSwitch("--output-format", settings.OutputFormat.ToString());
+        }
+
         return builder;
     }
 }
