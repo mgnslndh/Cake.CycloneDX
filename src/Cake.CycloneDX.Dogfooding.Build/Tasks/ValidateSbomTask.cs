@@ -20,7 +20,7 @@ public sealed class ValidateSbomTask : FrostingTask<BuildContext>
         {
             FailOnErrors = true,
             InputFormat = CdxCliValidateInputFormat.Xml,
-            InputVersion = CdxCliSpecificationVersion.V1_6
+            InputVersion = CdxCliSpecificationVersion.V1_7
         };
 
         context.CdxCliValidate(paths, settings);

@@ -1,9 +1,9 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 
-namespace Cake.CycloneDX.Tools.CdxCli;
+namespace Cake.CycloneDX.Tools.CdxDotNet;
 
 [SuppressMessage("ReSharper", "InconsistentNaming")]
-public enum CdxCliSpecificationVersion
+public enum CdxDotNetSpecificationVersion
 {
     V1_0,
     V1_1,

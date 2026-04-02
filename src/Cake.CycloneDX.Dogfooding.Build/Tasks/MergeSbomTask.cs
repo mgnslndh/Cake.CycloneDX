@@ -18,7 +18,7 @@ public sealed class MergeSbomTask : FrostingTask<BuildContext>
             Version = "1.0",
             InputFormat = CdxCliMergeFormat.Xml,
             OutputFormat = CdxCliMergeFormat.Xml,
-            OutputVersion = CdxCliSpecificationVersion.V1_6,
+            OutputVersion = CdxCliSpecificationVersion.V1_7,
         };
 
         var outputFile = context.Environment.ApplicationRoot.CombineWithFilePath("sbom/Merged.cdx");
