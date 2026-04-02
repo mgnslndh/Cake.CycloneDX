@@ -1,6 +1,4 @@
-﻿using System.Xml;
-using System.Xml.Linq;
-using System.Xml.XPath;
+﻿using System.Xml.Linq;
 using CycloneDX;
 using Xunit.Sdk;
 
@@ -54,14 +52,22 @@ namespace Cake.CycloneDX.Tests.Assertions
 
         public static void HaveComponentWithAttribute(string xml, string bomRef, string attributeName, string expectedValue)
         {
-            XDocument doc = XDocument.Parse(xml);
+            if (string.IsNullOrWhiteSpace(xml))
+            {
+                throw new ArgumentException("XML cannot be null or empty.", nameof(xml));
+            }
 
-            var ns = new XmlNamespaceManager(new NameTable());
-            ns.AddNamespace("c", "http://cyclonedx.org/schema/bom/1.6");
+            var doc = XDocument.Parse(xml, LoadOptions.SetLineInfo | LoadOptions.PreserveWhitespace);
 
-            string xpath = $"//c:component[@bom-ref='{bomRef}']";
+            if (doc.Root == null)
+            {
+                throw new XunitException("XML document has no root element.");
+            }
 
-            var component = doc.XPathSelectElement(xpath, ns);
+            XNamespace ns = doc.Root.Name.Namespace;
+
+            var component = doc.Descendants(ns + "component")
+                .FirstOrDefault(e => (string)e.Attribute("bom-ref") == bomRef);
 
             if (component == null)
             {
