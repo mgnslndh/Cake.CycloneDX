@@ -20,9 +20,31 @@ public static class CdxDeduplicateAliases
     [CakeMethodAlias]
     public static void CdxDeduplicate(this ICakeContext context, FilePath inputPath, FilePath outputPath, CdxDeduplicateSettings? settings = null)
     {
-        var document = XDocument.Load(inputPath.FullPath, LoadOptions.SetLineInfo);
+        Throw.IfFullPathIsNullOrWhitespace(inputPath);
+        Throw.IfFullPathIsNullOrWhitespace(outputPath);
+
+        var inputFile = context.FileSystem.GetFile(inputPath);
+        if (!inputFile.Exists)
+        {
+            throw new CakeException($"Input file '{inputPath.FullPath}' does not exist.");
+        }
+
+        XDocument document;
+        using (var readStream = inputFile.OpenRead())
+        {
+            document = XDocument.Load(readStream, LoadOptions.SetLineInfo);
+        }
+
         CdxDeduplicate(context, document, settings);
-        document.Save(outputPath.FullPath);
+
+        var outputDir = context.FileSystem.GetDirectory(outputPath.GetDirectory());
+        if (!outputDir.Exists)
+        {
+            outputDir.Create();
+        }
+
+        using var writeStream = context.FileSystem.GetFile(outputPath).OpenWrite();
+        document.Save(writeStream);
     }
 
     [CakeMethodAlias]
@@ -90,12 +112,18 @@ public static class CdxDeduplicateAliases
         foreach (var group in groups.Where(g => g.Count() > 1))
         {
             var retainedBomRef = group.First().Attribute("bom-ref")?.Value;
-            if (retainedBomRef == null) continue;
+            if (retainedBomRef == null)
+            {
+                continue;
+            }
+
             foreach (var discarded in group.Skip(1))
             {
                 var discardedBomRef = discarded.Attribute("bom-ref")?.Value;
                 if (discardedBomRef != null && discardedBomRef != retainedBomRef)
+                {
                     dependencyRedirects[discardedBomRef] = retainedBomRef;
+                }
             }
         }
 
@@ -115,7 +143,9 @@ public static class CdxDeduplicateAliases
         }
 
         if (dependencyRedirects.Count > 0)
+        {
             RewriteDependencyRefs(document, ns, dependencyRedirects);
+        }
     }
 
     private static void DeduplicateComponentsByBomRef(ICakeContext context, XDocument document)
@@ -183,7 +213,9 @@ public static class CdxDeduplicateAliases
         {
             var refAttr = dependency.Attribute("ref");
             if (refAttr != null && redirects.TryGetValue(refAttr.Value, out var newRef))
+            {
                 refAttr.Value = newRef;
+            }
         }
     }
 }

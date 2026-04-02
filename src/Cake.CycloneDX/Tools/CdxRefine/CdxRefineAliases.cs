@@ -21,9 +21,31 @@ public static class CdxRefineAliases
     [CakeMethodAlias]
     public static void CdxRefine(this ICakeContext context, FilePath inputPath, FilePath outputPath, CdxRefineSettings? settings = null)
     {
-        var document = XDocument.Load(inputPath.FullPath, LoadOptions.SetLineInfo);
+        Throw.IfFullPathIsNullOrWhitespace(inputPath);
+        Throw.IfFullPathIsNullOrWhitespace(outputPath);
+
+        var inputFile = context.FileSystem.GetFile(inputPath);
+        if (!inputFile.Exists)
+        {
+            throw new CakeException($"Input file '{inputPath.FullPath}' does not exist.");
+        }
+
+        XDocument document;
+        using (var readStream = inputFile.OpenRead())
+        {
+            document = XDocument.Load(readStream, LoadOptions.SetLineInfo);
+        }
+
         CdxRefine(context, document, settings);
-        document.Save(outputPath.FullPath);
+
+        var outputDir = context.FileSystem.GetDirectory(outputPath.GetDirectory());
+        if (!outputDir.Exists)
+        {
+            outputDir.Create();
+        }
+
+        using var writeStream = context.FileSystem.GetFile(outputPath).OpenWrite();
+        document.Save(writeStream);
     }
 
     [CakeMethodAlias]
