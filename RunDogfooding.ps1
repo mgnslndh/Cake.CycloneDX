@@ -1,0 +1,1 @@
+dotnet run --project src\Cake.CycloneDX.Dogfooding.Build\Cake.CycloneDX.Dogfooding.Build.csproj -- --verbosity diagnostic
