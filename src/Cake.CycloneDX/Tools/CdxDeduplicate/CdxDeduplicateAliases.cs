@@ -84,6 +84,21 @@ public static class CdxDeduplicateAliases
             }
         }
 
+        // Build a redirect map: discarded bom-ref → retained bom-ref.
+        // Needed to fix up <dependency> references that would otherwise point to removed components.
+        var dependencyRedirects = new Dictionary<string, string>();
+        foreach (var group in groups.Where(g => g.Count() > 1))
+        {
+            var retainedBomRef = group.First().Attribute("bom-ref")?.Value;
+            if (retainedBomRef == null) continue;
+            foreach (var discarded in group.Skip(1))
+            {
+                var discardedBomRef = discarded.Attribute("bom-ref")?.Value;
+                if (discardedBomRef != null && discardedBomRef != retainedBomRef)
+                    dependencyRedirects[discardedBomRef] = retainedBomRef;
+            }
+        }
+
         var deduplicated = groups
             .Select(g => g.First());
 
@@ -98,6 +113,9 @@ public static class CdxDeduplicateAliases
         {
             componentsParent.Add(component); // Re-add components without PURL
         }
+
+        if (dependencyRedirects.Count > 0)
+            RewriteDependencyRefs(document, ns, dependencyRedirects);
     }
 
     private static void DeduplicateComponentsByBomRef(ICakeContext context, XDocument document)
@@ -153,6 +171,19 @@ public static class CdxDeduplicateAliases
         foreach (var component in skipped)
         {
             componentsParent.Add(component);
+        }
+    }
+
+    // No dependency rewriting needed here: all duplicates in a bom-ref group share the same
+    // bom-ref value, so any <dependency ref="..."> already points to the value the retained
+    // component keeps.
+    private static void RewriteDependencyRefs(XDocument document, XNamespace ns, Dictionary<string, string> redirects)
+    {
+        foreach (var dependency in document.Descendants(ns + "dependency"))
+        {
+            var refAttr = dependency.Attribute("ref");
+            if (refAttr != null && redirects.TryGetValue(refAttr.Value, out var newRef))
+                refAttr.Value = newRef;
         }
     }
 }
