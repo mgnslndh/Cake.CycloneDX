@@ -87,5 +87,18 @@ namespace Cake.CycloneDX.Tests.Unit.Tools.CdxDotNet
             // Then
             Assert.Equal(expected, result.Path.FullPath);
         }
+
+        [Fact]
+        public void Should_Find_CdxDotNet_Executable_Without_Extension_On_Unix()
+        {
+            // Given
+            var fixture = new CdxDotNetUnixFixture();
+
+            // When
+            var result = fixture.Run();
+
+            // Then
+            Assert.Equal("/Working/tools/dotnet-cyclonedx", result.Path.FullPath);
+        }
     }
 }
