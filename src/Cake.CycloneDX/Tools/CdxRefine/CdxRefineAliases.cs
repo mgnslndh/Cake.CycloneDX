@@ -86,7 +86,7 @@ public static class CdxRefineAliases
 
         var metadataComponentElement = metadataElement.Element(ns + "component");
 
-        var componentsParent = document.Descendants(ns + "components").FirstOrDefault();
+        var componentsParent = document.Root?.Element(ns + "components");
         if (componentsParent == null)
         {
             return;
@@ -119,7 +119,7 @@ public static class CdxRefineAliases
     private static void RefineComponentTypes(ICakeContext context, XDocument document, XNamespace ns, IEnumerable<CdxRefineTypeSettings> settings)
     {
         XElement? metadataComponentElement = GetMetadata(document, ns);
-        var componentsParent = document.Descendants(ns + "components").FirstOrDefault();
+        var componentsParent = document.Root?.Element(ns + "components");
 
         foreach (var typeSettings in settings)
         {
