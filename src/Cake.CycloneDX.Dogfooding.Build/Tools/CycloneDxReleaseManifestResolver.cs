@@ -20,6 +20,7 @@ internal sealed class CycloneDxReleaseManifestResolver
             .Add(PlatformFamily.Windows, Architecture.X64, "cyclonedx-win-x64.exe", "1f563ba9644d2f2966fc8029fd701ca4af4f388d44c017c1d60559a1ecc9114f")
             .Add(PlatformFamily.Windows, Architecture.X86, "cyclonedx-win-x86.exe", "8eab8678920cd2688b717b2d8b784374bd6758f948d5ef2b3f5828def51b6fa2")
             .Add(PlatformFamily.Linux, Architecture.X64, "cyclonedx-linux-x64", "f89876326620f5fc78a9b27cc1af57d6ed13d019aab87490e1246a44a910babb")
+            .Add(PlatformFamily.Linux, Architecture.Arm64, "cyclonedx-linux-arm64", "190da406177311aa1081edd0c717df10271eba7e4356a56215494a70e1a4b459")
             .Add(PlatformFamily.OSX, Architecture.X64, "cyclonedx-osx-x64", "1603264fd2968b8d617e48aa7e9cf17bee1d25a8ffe717aec37caf1605a21961")
             .Add(PlatformFamily.OSX, Architecture.Arm64, "cyclonedx-osx-arm64", "dabbaf07e543e7996f708147475e2daa69ddf8a8683c5b06febc7d3f074e5e24");
 
