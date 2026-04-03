@@ -24,6 +24,7 @@ public static class CdxCliExecutable
             (PlatformFamily.Windows, Architecture.X86) => "cyclonedx-win-x86.exe",
             (PlatformFamily.Linux, Architecture.X64) => "cyclonedx-linux-x64",
             (PlatformFamily.OSX, Architecture.X64) => "cyclonedx-osx-x64",
+            (PlatformFamily.OSX, Architecture.Arm64) => "cyclonedx-osx-arm64",
             _ => throw new CakeException("Unsupported platform.")
         };
 }

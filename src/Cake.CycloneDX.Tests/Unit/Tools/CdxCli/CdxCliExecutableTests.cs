@@ -8,10 +8,11 @@ namespace Cake.CycloneDX.Tests.Unit.Tools.CdxCli
     public sealed class CdxCliExecutableTests
     {
         [Theory]
-        [InlineData(PlatformFamily.Windows, Architecture.X64, "cyclonedx-win-x64.exe")]
-        [InlineData(PlatformFamily.Windows, Architecture.X86, "cyclonedx-win-x86.exe")]
-        [InlineData(PlatformFamily.Linux,   Architecture.X64, "cyclonedx-linux-x64")]
-        [InlineData(PlatformFamily.OSX,     Architecture.X64, "cyclonedx-osx-x64")]
+        [InlineData(PlatformFamily.Windows, Architecture.X64,   "cyclonedx-win-x64.exe")]
+        [InlineData(PlatformFamily.Windows, Architecture.X86,   "cyclonedx-win-x86.exe")]
+        [InlineData(PlatformFamily.Linux,   Architecture.X64,   "cyclonedx-linux-x64")]
+        [InlineData(PlatformFamily.OSX,     Architecture.X64,   "cyclonedx-osx-x64")]
+        [InlineData(PlatformFamily.OSX,     Architecture.Arm64, "cyclonedx-osx-arm64")]
         public void GetFilename_Should_Return_Correct_Name_For_Platform(
             PlatformFamily family, Architecture architecture, string expected)
         {
