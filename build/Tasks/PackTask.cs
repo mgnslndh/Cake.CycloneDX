@@ -15,7 +15,6 @@ public sealed class PackTask : FrostingTask<BuildContext>
             Configuration = "Release",
             Verbosity = DotNetVerbosity.Minimal,
             NoBuild = true,
-            IncludeSymbols = true,
             NoRestore = true,
             OutputDirectory = "./artifacts",
         });
