@@ -32,8 +32,4 @@ jobs:
       - name: Install CycloneDX tool
         run: dotnet tool install -g CycloneDX --version 6.1.0
       - name: Build Cake.CycloneDX
-        uses: cake-build/cake-action@v3
-        with:
-          project-path: build/Build.csproj
-          target: All
-          verbosity: Diagnostic
+        run: dotnet run --project build/Build.csproj -- --target All --verbosity Diagnostic
