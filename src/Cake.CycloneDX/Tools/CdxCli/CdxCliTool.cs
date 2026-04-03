@@ -1,4 +1,5 @@
-﻿using Cake.Core;
+﻿using System.Runtime.InteropServices;
+using Cake.Core;
 using Cake.Core.IO;
 using Cake.Core.Tooling;
 
@@ -47,7 +48,7 @@ public abstract class CdxCliTool<TSettings> : Tool<TSettings>
     {
         return
         [
-            CdxCliExecutable.GetFilename(Environment.Platform.Family, Environment.Platform.Is64Bit),
+            CdxCliExecutable.GetFilename(Environment.Platform.Family, RuntimeInformation.ProcessArchitecture),
             "cyclonedx"
         ];
     }

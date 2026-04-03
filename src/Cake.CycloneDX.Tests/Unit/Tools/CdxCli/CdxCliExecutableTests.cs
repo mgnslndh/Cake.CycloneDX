@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Cake.Core;
 using Cake.CycloneDX.Tools.CdxCli;
 using Xunit;
@@ -7,28 +8,28 @@ namespace Cake.CycloneDX.Tests.Unit.Tools.CdxCli
     public sealed class CdxCliExecutableTests
     {
         [Theory]
-        [InlineData(PlatformFamily.Windows, true,  "cyclonedx-win-x64.exe")]
-        [InlineData(PlatformFamily.Windows, false, "cyclonedx-win-x86.exe")]
-        [InlineData(PlatformFamily.Linux,   true,  "cyclonedx-linux-x64")]
-        [InlineData(PlatformFamily.OSX,     true,  "cyclonedx-osx-x64")]
+        [InlineData(PlatformFamily.Windows, Architecture.X64, "cyclonedx-win-x64.exe")]
+        [InlineData(PlatformFamily.Windows, Architecture.X86, "cyclonedx-win-x86.exe")]
+        [InlineData(PlatformFamily.Linux,   Architecture.X64, "cyclonedx-linux-x64")]
+        [InlineData(PlatformFamily.OSX,     Architecture.X64, "cyclonedx-osx-x64")]
         public void GetFilename_Should_Return_Correct_Name_For_Platform(
-            PlatformFamily family, bool is64Bit, string expected)
+            PlatformFamily family, Architecture architecture, string expected)
         {
             // When
-            var result = CdxCliExecutable.GetFilename(family, is64Bit);
+            var result = CdxCliExecutable.GetFilename(family, architecture);
 
             // Then
             Assert.Equal(expected, result);
         }
 
         [Theory]
-        [InlineData(PlatformFamily.Unknown, true)]
-        [InlineData(PlatformFamily.Linux,   false)]
-        [InlineData(PlatformFamily.OSX,     false)]
-        public void GetFilename_Should_Throw_For_Unsupported_Platform(PlatformFamily family, bool is64Bit)
+        [InlineData(PlatformFamily.Unknown, Architecture.X64)]
+        [InlineData(PlatformFamily.Linux,   Architecture.X86)]
+        [InlineData(PlatformFamily.OSX,     Architecture.X86)]
+        public void GetFilename_Should_Throw_For_Unsupported_Platform(PlatformFamily family, Architecture architecture)
         {
             // When
-            var result = Record.Exception(() => CdxCliExecutable.GetFilename(family, is64Bit));
+            var result = Record.Exception(() => CdxCliExecutable.GetFilename(family, architecture));
 
             // Then
             Assert.IsType<CakeException>(result);
