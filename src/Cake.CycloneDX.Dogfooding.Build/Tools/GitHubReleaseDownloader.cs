@@ -64,6 +64,12 @@ internal sealed class GitHubReleaseDownloader
         {
             VerifyChecksum(targetPath.FullPath, asset.Sha256);
         }
+
+        if (!OperatingSystem.IsWindows())
+        {
+            File.SetUnixFileMode(targetPath.FullPath,
+                File.GetUnixFileMode(targetPath.FullPath) | UnixFileMode.UserExecute | UnixFileMode.GroupExecute | UnixFileMode.OtherExecute);
+        }
     }
 
     private static Uri BuildDownloadUrl(GitHubReleaseAsset asset) =>
