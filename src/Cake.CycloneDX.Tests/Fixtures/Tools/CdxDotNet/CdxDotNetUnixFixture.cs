@@ -6,7 +6,7 @@ namespace Cake.CycloneDX.Tests.Fixtures.Tools.CdxDotNet;
 internal class CdxDotNetUnixFixture : ToolFixture<CdxDotNetSettings>
 {
     internal CdxDotNetUnixFixture()
-        : base("dotnet-cyclonedx")
+        : base("dotnet-CycloneDX")
     {
     }
 

@@ -98,7 +98,7 @@ namespace Cake.CycloneDX.Tests.Unit.Tools.CdxDotNet
             var result = fixture.Run();
 
             // Then
-            Assert.Equal("/Working/tools/dotnet-cyclonedx", result.Path.FullPath);
+            Assert.Equal("/Working/tools/dotnet-CycloneDX", result.Path.FullPath);
         }
     }
 }
