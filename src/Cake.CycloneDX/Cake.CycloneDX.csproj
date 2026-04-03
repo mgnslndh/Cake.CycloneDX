@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Cake.Core" PrivateAssets="all" />
+    <PackageReference Include="MinVer" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>

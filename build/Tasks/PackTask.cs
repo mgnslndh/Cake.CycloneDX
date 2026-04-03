@@ -17,6 +17,7 @@ public sealed class PackTask : FrostingTask<BuildContext>
             NoBuild = true,
             IncludeSymbols = true,
             NoRestore = true,
+            OutputDirectory = "./artifacts",
         });
     }
 }

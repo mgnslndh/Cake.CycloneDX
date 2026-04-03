@@ -1,3 +1,4 @@
+using System;
 using Cake.Frosting;
 
 namespace Build;
@@ -8,6 +9,7 @@ public static class Program
     {
         return new CakeHost()
             .UseContext<BuildContext>()
+            .UseLifetime<BuildLifetime>()
             .Run(args);
     }
 }

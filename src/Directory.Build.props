@@ -1,7 +1,8 @@
 <Project>
 
+  <Import Project="$(MSBuildThisFileDirectory)..\build\MinVer.props" />
+
   <PropertyGroup>
-    <Version>0.0.4</Version>
     <Deterministic>true</Deterministic>
     <LangVersion>preview</LangVersion>
 
