@@ -40,7 +40,7 @@ public class CdxDotNet : Tool<CdxDotNetSettings>
     /// <returns>The tool executable name.</returns>
     protected override IEnumerable<string> GetToolExecutableNames()
     {
-        return ["dotnet-cyclonedx.exe", "dotnet-cyclonedx"];
+        return ["dotnet-CycloneDX.exe", "dotnet-CycloneDX"];
     }
 
     public void Run(string path, CdxDotNetSettings settings)
