@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using Cake.Common.Diagnostics;
 using Cake.Core;
 
 namespace Cake.CycloneDX.Dogfooding.Build.Tools;
@@ -68,6 +69,8 @@ internal sealed class CycloneDxCliDownloader
     {
         var cdxAsset = _resolver.ResolveAsset(version, family, architecture);
         var releaseAsset = new GitHubReleaseAsset(Owner, Repository, version, cdxAsset.Filename, cdxAsset.Sha256);
+
+        context.Information("Downloading CycloneDX CLI {0} for {1}/{2}", version, family, architecture);
         _downloader.Download(context, releaseAsset, behavior);
     }
 }

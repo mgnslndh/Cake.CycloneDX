@@ -1,7 +1,9 @@
 using System.Security.Cryptography;
+using Cake.Common.Diagnostics;
 using Cake.Common.IO;
 using Cake.Common.Net;
 using Cake.Core;
+using Cake.Core.Diagnostics;
 using Cake.Core.IO;
 
 namespace Cake.CycloneDX.Dogfooding.Build.Tools;
@@ -36,6 +38,8 @@ internal sealed class GitHubReleaseDownloader
 
         if (fileExists && behavior == DownloadBehavior.IfNeeded)
         {
+            context.Log.Verbose(Verbosity.Diagnostic, $"Found existing file at '{toolPath!.FullPath}'.");
+
             if (asset.Sha256 == null)
             {
                 return;
@@ -44,10 +48,12 @@ internal sealed class GitHubReleaseDownloader
             var existingHash = ComputeHash(toolPath!.FullPath);
             if (string.Equals(existingHash, asset.Sha256, StringComparison.OrdinalIgnoreCase))
             {
+                context.Log.Verbose(Verbosity.Diagnostic, $"Existing file at '{toolPath!.FullPath}' matches the expected hash.");
                 return;
             }
 
             // Hash mismatch — delete the stale file and re-download.
+            context.Log.Verbose(Verbosity.Diagnostic, $"Existing file at '{toolPath!.FullPath}' does not match the expected hash.");
             context.DeleteFile(toolPath!.FullPath);
         }
 
@@ -65,6 +71,7 @@ internal sealed class GitHubReleaseDownloader
 
     private static void DownloadFile(ICakeContext context, Uri downloadUrl, FilePath targetPath)
     {
+        context.Verbose($"Downloading '{targetPath.GetFilename()}' from {downloadUrl}");
         try
         {
             context.DownloadFile(downloadUrl, targetPath, new DownloadFileSettings());
