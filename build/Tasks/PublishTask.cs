@@ -1,6 +1,7 @@
+using Cake.Common.IO;
 using Cake.Common.Tools.DotNet;
 using Cake.Common.Tools.DotNet.NuGet.Push;
-using Cake.Core.Diagnostics;
+using Cake.Core;
 using Cake.Frosting;
 
 namespace Build.Tasks;

@@ -1,3 +1,4 @@
+#nullable enable
 using Cake.Core;
 using Cake.Frosting;
 
