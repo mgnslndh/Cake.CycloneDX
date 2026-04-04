@@ -13,9 +13,14 @@ public sealed class ReleaseTask : FrostingTask<BuildContext>
         var tag = context.GitHubRefName
             ?? throw new CakeException("GITHUB_REF_NAME environment variable is not set.");
 
+        var isPrerelease = tag.Contains('-');
+        var args = isPrerelease
+            ? $"release create {tag} ./artifacts/*.nupkg --generate-notes --prerelease --latest=false"
+            : $"release create {tag} ./artifacts/*.nupkg --generate-notes --verify-tag --fail-on-no-commits";
+
         context.StartProcess("gh", new Cake.Core.IO.ProcessSettings
         {
-            Arguments = $"release create {tag} ./artifacts/*.nupkg --generate-notes"
+            Arguments = args
         });
     }
 }
