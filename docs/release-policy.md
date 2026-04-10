@@ -78,9 +78,7 @@ When a preview release is created:
 
 ## Alpha, Nightly, and CI Packages
 
-Untagged commits on `main` automatically produce alpha versions such as `1.3.0-alpha.0.4` via MinVer. These are published to NuGet.org by the CI workflow on every merge to `main` but do not get a GitHub Release.
-
-Packages intended only for automation, smoke testing, or internal validation should not get a GitHub Release unless there is a specific reason to publish notes for humans.
+Untagged commits on `main` automatically produce alpha versions such as `1.3.0-alpha.0.4` via MinVer. These are not published to NuGet.org and do not get a GitHub Release.
 
 These packages are not part of the public release history.
 
