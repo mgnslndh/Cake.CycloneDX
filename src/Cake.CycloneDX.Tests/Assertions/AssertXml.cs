@@ -83,5 +83,78 @@ namespace Cake.CycloneDX.Tests.Assertions
                     $"Expected component with bom-ref '{bomRef}' to have attribute {attributeName} with value '{expectedValue}' but it was '{actualValue ?? "<null>"}");
             }
         }
+
+        public static void HasComponent(string xml, string bomRef)
+        {
+            if (CountComponents(xml, bomRef) == 0)
+            {
+                throw new XunitException($"Expected component with bom-ref '{bomRef}' but it does not exist.");
+            }
+        }
+
+        public static void DoesNotHaveComponent(string xml, string bomRef)
+        {
+            int count = CountComponents(xml, bomRef);
+            if (count != 0)
+            {
+                throw new XunitException($"Expected no component with bom-ref '{bomRef}' but found {count}.");
+            }
+        }
+
+        public static void HasDependency(string xml, string parentBomRef, string childBomRef)
+        {
+            int count = CountEdges(xml, parentBomRef, childBomRef);
+            if (count != 1)
+            {
+                throw new XunitException($"Expected exactly one edge '{parentBomRef}' -> '{childBomRef}' but found {count}.");
+            }
+        }
+
+        public static void DoesNotHaveDependency(string xml, string parentBomRef, string childBomRef)
+        {
+            int count = CountEdges(xml, parentBomRef, childBomRef);
+            if (count != 0)
+            {
+                throw new XunitException($"Expected no edge '{parentBomRef}' -> '{childBomRef}' but found {count}.");
+            }
+        }
+
+        public static void IsNotReferencedInDependencies(string xml, string bomRef)
+        {
+            var (document, ns) = Parse(xml);
+            int count = document.Descendants(ns + "dependency").Count(e => (string)e.Attribute("ref") == bomRef);
+            if (count != 0)
+            {
+                throw new XunitException($"Expected no <dependency ref=\"{bomRef}\"> elements but found {count}.");
+            }
+        }
+
+        private static int CountComponents(string xml, string bomRef)
+        {
+            var (document, ns) = Parse(xml);
+            return document.Descendants(ns + "component").Count(c => (string)c.Attribute("bom-ref") == bomRef);
+        }
+
+        private static int CountEdges(string xml, string parentBomRef, string childBomRef)
+        {
+            var (document, ns) = Parse(xml);
+            var entries = document.Root.Element(ns + "dependencies")?.Elements(ns + "dependency")
+                ?? Enumerable.Empty<XElement>();
+            return entries
+                .Where(e => (string)e.Attribute("ref") == parentBomRef)
+                .Elements(ns + "dependency")
+                .Count(e => (string)e.Attribute("ref") == childBomRef);
+        }
+
+        private static (XDocument Document, XNamespace Ns) Parse(string xml)
+        {
+            var document = XDocument.Parse(xml);
+            if (document.Root == null)
+            {
+                throw new XunitException("XML document has no root element.");
+            }
+
+            return (document, document.Root.Name.Namespace);
+        }
     }
 }

@@ -2,6 +2,24 @@
 
 public static class CdxRefineSettingsExtensions
 {
+    public static CdxRefineSettings WithExcludeByName(this CdxRefineSettings settings, string namePattern)
+    {
+        settings.Exclusions.Add(new NameCriteria(namePattern));
+        return settings;
+    }
+
+    public static CdxRefineSettings WithExcludeByPurl(this CdxRefineSettings settings, string purlPattern)
+    {
+        settings.Exclusions.Add(new PurlCriteria(purlPattern));
+        return settings;
+    }
+
+    public static CdxRefineSettings WithExcludeByBomRef(this CdxRefineSettings settings, string bomRefPattern)
+    {
+        settings.Exclusions.Add(new BomRefCriteria(bomRefPattern));
+        return settings;
+    }
+
     public static CdxRefineSettings WithGroupByName(this CdxRefineSettings settings, string groupName, string namePattern)
     {
         settings.GroupSettings.Add(new CdxRefineGroupSettings(groupName, new NameCriteria(namePattern)));

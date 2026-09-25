@@ -65,6 +65,13 @@ public static class CdxRefineAliases
 
         settings ??= new CdxRefineSettings();
 
+        var graph = new CdxDependencyGraph(document, ns);
+
+        if (settings.Exclusions.Count > 0)
+        {
+            ComponentExcluder.Exclude(context, graph, settings.Exclusions);
+        }
+
         if (settings.GroupSettings.Any())
         {
             RefineComponentGroups(context, document, ns, settings.GroupSettings);
