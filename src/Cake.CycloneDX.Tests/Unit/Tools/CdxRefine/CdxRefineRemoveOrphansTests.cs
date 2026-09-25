@@ -169,6 +169,22 @@ public class CdxRefineRemoveOrphansTests
     }
 
     [Fact]
+    public void ShouldThrowWhenMetaHasBomRefButNoTopLevelEntry()
+    {
+        var xml = TestSbom.Create(
+            Meta,
+            TestSbom.Component("a") + TestSbom.Component("b"),
+            TestSbom.Dependency("a", "b") + TestSbom.Dependency("b"));
+
+        var exception = Record.Exception(() => TestSbom.Refine(xml, new CdxRefineSettings().WithRemoveOrphanedComponents()));
+
+        Assert.IsType<CakeException>(exception);
+        Assert.Equal(
+            "Cannot remove orphaned components: the metadata component is not the root of the dependency graph. Use WithAdoptOrphanedComponents() or WithAdoptionBy*() to anchor the tree first.",
+            exception.Message);
+    }
+
+    [Fact]
     public void ShouldThrowWhenSbomHasNoMetadataButHasGraph()
     {
         var xml = TestSbom.Create(
@@ -195,6 +211,25 @@ public class CdxRefineRemoveOrphansTests
         AssertXml.IsValidSbom(refined);
         var warnings = log.Entries.Where(e => e.Level == LogLevel.Warning).Select(e => e.Message).ToList();
         Assert.Equal(new[] { "The following orphaned components have been removed:", "  - Zed@2.0" }, warnings);
+    }
+
+    [Fact]
+    public void ShouldKeepAndLogNestedComponentsUnreachableAfterHierarchicalExclusion()
+    {
+        var xml = TestSbom.Create(
+            Meta,
+            TestSbom.Component("p", "Parent", nested: TestSbom.Component("n1", "N1") + TestSbom.Component("n2", "N2")),
+            TestSbom.Dependency("app", "p") + TestSbom.Dependency("p", "n1") + TestSbom.Dependency("n1", "n2") + TestSbom.Dependency("n2"));
+        var log = new FakeLog();
+
+        var settings = new CdxRefineSettings().WithExcludeByName("^N1$").WithRemoveOrphanedComponents();
+        var refined = TestSbom.Refine(xml, settings, log);
+
+        AssertXml.IsValidSbom(refined);
+        AssertXml.DoesNotHaveComponent(refined, "n1");
+        AssertXml.HasComponent(refined, "n2");
+        Assert.Contains(log.Entries, e => e.Level == LogLevel.Information
+            && e.Message == "1 nested components are unreachable from the metadata component but were kept; orphan removal only evaluates top-level components.");
     }
 
     [Fact]

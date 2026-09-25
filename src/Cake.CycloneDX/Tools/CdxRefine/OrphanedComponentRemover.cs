@@ -27,18 +27,30 @@ internal static class OrphanedComponentRemover
         if (orphans.Count == 0)
         {
             context.Log.Verbose("No orphaned components were found.");
-            return;
         }
-
-        context.Log.Warning("The following orphaned components have been removed:");
-        var removedBomRefs = new HashSet<string>(StringComparer.Ordinal);
-        foreach (var orphan in orphans)
+        else
         {
-            context.Log.Warning("  - {0}", graph.GetDisplayName(orphan));
-            removedBomRefs.UnionWith(graph.GetBomRefsIncludingNested(orphan));
-            orphan.Remove();
+            context.Log.Warning("The following orphaned components have been removed:");
+            var removedBomRefs = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var orphan in orphans)
+            {
+                context.Log.Warning("  - {0}", graph.GetDisplayName(orphan));
+                removedBomRefs.UnionWith(graph.GetBomRefsIncludingNested(orphan));
+                orphan.Remove();
+            }
+
+            graph.RemoveReferences(removedBomRefs);
         }
 
-        graph.RemoveReferences(removedBomRefs);
+        var nestedUnreachableCount = graph.AllComponents
+            .Except(graph.TopLevelComponents)
+            .Count(component => CdxDependencyGraph.GetBomRef(component) is { } bomRef && !reachable.Contains(bomRef));
+
+        if (nestedUnreachableCount > 0)
+        {
+            context.Log.Information(
+                "{0} nested components are unreachable from the metadata component but were kept; orphan removal only evaluates top-level components.",
+                nestedUnreachableCount);
+        }
     }
 }

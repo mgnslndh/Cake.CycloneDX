@@ -168,6 +168,11 @@ unreferenced, and step 3 removes them if it is enabled.
    line `The following orphaned components have been removed:` followed by one line per component,
    `  - {name}@{version}`. If nothing was removed, log `No orphaned components were found.` at
    Verbose level.
+6. Nested components are never pruned by this step (only top-level components are evaluated). If,
+   after the reachability walk and any top-level removals, one or more nested components have a
+   bom-ref that is not reachable from meta, log at Information level:
+   `{n} nested components are unreachable from the metadata component but were kept; orphan
+   removal only evaluates top-level components.`
 
 The reachability walk finds all unreachable components at once, so a single pass is enough.
 Removing unreachable components cannot make a reachable component unreachable.
