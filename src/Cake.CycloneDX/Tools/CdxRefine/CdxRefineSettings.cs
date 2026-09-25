@@ -3,6 +3,7 @@
 public class CdxRefineSettings
 {
     public List<ICdxComponentCriteria> Exclusions { get; set; } = new();
+    public bool RemoveOrphanedComponents { get; set; }
     public List<CdxRefineGroupSettings> GroupSettings { get; set; } = new();
     public List<CdxRefineTypeSettings> TypeSettings { get; set; } = new();
 }

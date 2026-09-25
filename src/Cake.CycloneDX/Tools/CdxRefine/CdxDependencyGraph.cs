@@ -23,6 +23,19 @@ internal sealed class CdxDependencyGraph
     public IEnumerable<XElement> AllComponents =>
         _document.Root?.Element(_ns + "components")?.Descendants(_ns + "component") ?? Enumerable.Empty<XElement>();
 
+    public bool IsFlat => !(Dependencies?.Elements(_ns + "dependency").Any() ?? false);
+
+    public string? MetadataBomRef => Metadata is { } metadata ? GetBomRef(metadata) : null;
+
+    public bool IsAnchored
+    {
+        get
+        {
+            var metadataBomRef = MetadataBomRef;
+            return metadataBomRef != null && GetEntries(metadataBomRef).Any();
+        }
+    }
+
     private XElement? Dependencies => _document.Root?.Element(_ns + "dependencies");
 
     public static string? GetBomRef(XElement component)
@@ -34,6 +47,32 @@ internal sealed class CdxDependencyGraph
     public string GetName(XElement component)
     {
         return component.Element(_ns + "name")?.Value ?? "<unnamed>";
+    }
+
+    public string GetDisplayName(XElement component)
+    {
+        var version = component.Element(_ns + "version")?.Value;
+        return string.IsNullOrWhiteSpace(version) ? GetName(component) : $"{GetName(component)}@{version}";
+    }
+
+    public ISet<string> GetReachable(string rootBomRef)
+    {
+        var reachable = new HashSet<string>(StringComparer.Ordinal) { rootBomRef };
+        var queue = new Queue<string>();
+        queue.Enqueue(rootBomRef);
+
+        while (queue.Count > 0)
+        {
+            foreach (var child in GetChildren(queue.Dequeue()))
+            {
+                if (reachable.Add(child))
+                {
+                    queue.Enqueue(child);
+                }
+            }
+        }
+
+        return reachable;
     }
 
     public ISet<string> GetBomRefsIncludingNested(XElement component)
@@ -67,5 +106,19 @@ internal sealed class CdxDependencyGraph
         {
             dependency.Remove();
         }
+    }
+
+    private IEnumerable<XElement> GetEntries(string bomRef)
+    {
+        return Dependencies?.Elements(_ns + "dependency").Where(entry => entry.Attribute("ref")?.Value == bomRef)
+            ?? Enumerable.Empty<XElement>();
+    }
+
+    private IEnumerable<string> GetChildren(string bomRef)
+    {
+        return GetEntries(bomRef)
+            .Elements(_ns + "dependency")
+            .Select(edge => edge.Attribute("ref")?.Value)
+            .OfType<string>();
     }
 }

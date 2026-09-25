@@ -72,6 +72,11 @@ public static class CdxRefineAliases
             ComponentExcluder.Exclude(context, graph, settings.Exclusions);
         }
 
+        if (settings.RemoveOrphanedComponents)
+        {
+            OrphanedComponentRemover.Remove(context, graph);
+        }
+
         if (settings.GroupSettings.Any())
         {
             RefineComponentGroups(context, document, ns, settings.GroupSettings);

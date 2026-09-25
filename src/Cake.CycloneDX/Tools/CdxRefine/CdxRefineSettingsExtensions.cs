@@ -20,6 +20,12 @@ public static class CdxRefineSettingsExtensions
         return settings;
     }
 
+    public static CdxRefineSettings WithRemoveOrphanedComponents(this CdxRefineSettings settings)
+    {
+        settings.RemoveOrphanedComponents = true;
+        return settings;
+    }
+
     public static CdxRefineSettings WithGroupByName(this CdxRefineSettings settings, string groupName, string namePattern)
     {
         settings.GroupSettings.Add(new CdxRefineGroupSettings(groupName, new NameCriteria(namePattern)));
