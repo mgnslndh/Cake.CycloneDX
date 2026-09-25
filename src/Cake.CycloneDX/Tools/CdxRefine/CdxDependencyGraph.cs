@@ -57,13 +57,19 @@ internal sealed class CdxDependencyGraph
 
     public ISet<string> GetReachable(string rootBomRef)
     {
+        var childrenByRef = BuildAdjacency();
         var reachable = new HashSet<string>(StringComparer.Ordinal) { rootBomRef };
         var queue = new Queue<string>();
         queue.Enqueue(rootBomRef);
 
         while (queue.Count > 0)
         {
-            foreach (var child in GetChildren(queue.Dequeue()))
+            if (!childrenByRef.TryGetValue(queue.Dequeue(), out var children))
+            {
+                continue;
+            }
+
+            foreach (var child in children)
             {
                 if (reachable.Add(child))
                 {
@@ -162,5 +168,37 @@ internal sealed class CdxDependencyGraph
             .Elements(_ns + "dependency")
             .Select(edge => edge.Attribute("ref")?.Value)
             .OfType<string>();
+    }
+
+    private Dictionary<string, List<string>> BuildAdjacency()
+    {
+        var childrenByRef = new Dictionary<string, List<string>>(StringComparer.Ordinal);
+        var entries = Dependencies?.Elements(_ns + "dependency") ?? Enumerable.Empty<XElement>();
+
+        foreach (var entry in entries)
+        {
+            var parentRef = entry.Attribute("ref")?.Value;
+            if (parentRef == null)
+            {
+                continue;
+            }
+
+            if (!childrenByRef.TryGetValue(parentRef, out var children))
+            {
+                children = new List<string>();
+                childrenByRef[parentRef] = children;
+            }
+
+            foreach (var edge in entry.Elements(_ns + "dependency"))
+            {
+                var childRef = edge.Attribute("ref")?.Value;
+                if (childRef != null)
+                {
+                    children.Add(childRef);
+                }
+            }
+        }
+
+        return childrenByRef;
     }
 }
