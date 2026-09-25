@@ -63,6 +63,7 @@ public class CdxRefineExcludeTests
 
         var refined = TestSbom.Refine(xml, new CdxRefineSettings().WithExcludeByName("^Nothing$"));
 
+        AssertXml.IsValidSbom(refined);
         Assert.True(XNode.DeepEquals(XDocument.Parse(xml), XDocument.Parse(refined)));
     }
 
