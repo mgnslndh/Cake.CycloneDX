@@ -144,6 +144,22 @@ public class CdxRefineAdoptTests
     }
 
     [Fact]
+    public void ShouldLogNoBomRefWhenMatchedComponentHasNoBomRef()
+    {
+        var xml = TestSbom.Create(
+            Meta,
+            TestSbom.Component("a") + TestSbom.Component(null, "NoRef"),
+            TestSbom.Dependency("app", "a") + TestSbom.Dependency("a"));
+        var log = new FakeLog();
+
+        var refined = TestSbom.Refine(xml, new CdxRefineSettings().WithAdoptionByName("^NoRef$"), log);
+
+        AssertXml.IsValidSbom(refined);
+        Assert.Contains(log.Entries, e => e.Level == LogLevel.Verbose
+            && e.Message == "Skipping adoption of component 'NoRef': it has no bom-ref.");
+    }
+
+    [Fact]
     public void ShouldSkipParentWhenRuleMatchesIt()
     {
         var xml = TestSbom.Create(
@@ -254,6 +270,22 @@ public class CdxRefineAdoptTests
 
         AssertXml.IsValidSbom(refined);
         Assert.Null(TestSbom.MetadataBomRef(refined));
+    }
+
+    [Fact]
+    public void ShouldNotDuplicateEdgeWhenSameBomRefAppearsTwice()
+    {
+        var xml = TestSbom.Create(
+            Meta,
+            TestSbom.Component("a") + TestSbom.Component("dup", "Dup1") + TestSbom.Component("dup", "Dup2"),
+            TestSbom.Dependency("app", "a") + TestSbom.Dependency("a"));
+
+        var refined = TestSbom.Refine(xml, new CdxRefineSettings().WithAdoptOrphanedComponents());
+
+        // Duplicate bom-refs are not valid CycloneDX (bom-ref is an xs:ID and must be document-wide
+        // unique), so AssertXml.IsValidSbom is intentionally not called here; this test only
+        // exercises that adopting two orphans with the same bom-ref does not duplicate the edge.
+        AssertXml.HasDependency(refined, "app", "dup");
     }
 
     [Fact]

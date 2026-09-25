@@ -28,6 +28,12 @@ internal static class ComponentAdopter
                     continue;
                 }
 
+                if (CdxDependencyGraph.GetBomRef(component) == null)
+                {
+                    context.Log.Verbose("Skipping adoption of component '{0}': it has no bom-ref.", graph.GetName(component));
+                    continue;
+                }
+
                 if (!orphanSet.Contains(component))
                 {
                     context.Log.Verbose("Skipping adoption of component '{0}': it is not an orphan.", graph.GetName(component));
