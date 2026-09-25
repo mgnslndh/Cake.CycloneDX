@@ -67,6 +67,11 @@ public static class CdxRefineAliases
 
         var graph = new CdxDependencyGraph(document, ns);
 
+        if (settings.Adoptions.Count > 0 || settings.AdoptOrphanedComponents)
+        {
+            ComponentAdopter.Adopt(context, graph, settings.Adoptions, settings.AdoptOrphanedComponents);
+        }
+
         if (settings.Exclusions.Count > 0)
         {
             ComponentExcluder.Exclude(context, graph, settings.Exclusions);

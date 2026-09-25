@@ -41,4 +41,9 @@ public class NameCriteria : ICdxComponentCriteria
 
         return _pattern.IsMatch(name);
     }
+
+    public override string ToString()
+    {
+        return $"name matches '{_pattern}'";
+    }
 }

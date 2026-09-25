@@ -41,4 +41,9 @@ public class BomRefCriteria : ICdxComponentCriteria
 
         return _pattern.IsMatch(name);
     }
+
+    public override string ToString()
+    {
+        return $"bom-ref matches '{_pattern}'";
+    }
 }

@@ -2,6 +2,30 @@
 
 public static class CdxRefineSettingsExtensions
 {
+    public static CdxRefineSettings WithAdoptionByName(this CdxRefineSettings settings, string namePattern, ICdxComponentCriteria? parent = null)
+    {
+        settings.Adoptions.Add(new CdxRefineAdoptionSettings(new NameCriteria(namePattern), parent));
+        return settings;
+    }
+
+    public static CdxRefineSettings WithAdoptionByPurl(this CdxRefineSettings settings, string purlPattern, ICdxComponentCriteria? parent = null)
+    {
+        settings.Adoptions.Add(new CdxRefineAdoptionSettings(new PurlCriteria(purlPattern), parent));
+        return settings;
+    }
+
+    public static CdxRefineSettings WithAdoptionByBomRef(this CdxRefineSettings settings, string bomRefPattern, ICdxComponentCriteria? parent = null)
+    {
+        settings.Adoptions.Add(new CdxRefineAdoptionSettings(new BomRefCriteria(bomRefPattern), parent));
+        return settings;
+    }
+
+    public static CdxRefineSettings WithAdoptOrphanedComponents(this CdxRefineSettings settings)
+    {
+        settings.AdoptOrphanedComponents = true;
+        return settings;
+    }
+
     public static CdxRefineSettings WithExcludeByName(this CdxRefineSettings settings, string namePattern)
     {
         settings.Exclusions.Add(new NameCriteria(namePattern));

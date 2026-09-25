@@ -41,4 +41,9 @@ public class PurlCriteria : ICdxComponentCriteria
 
         return _pattern.IsMatch(purl);
     }
+
+    public override string ToString()
+    {
+        return $"purl matches '{_pattern}'";
+    }
 }

@@ -75,6 +75,48 @@ internal sealed class CdxDependencyGraph
         return reachable;
     }
 
+    public List<XElement> GetOrphans()
+    {
+        var edges = Dependencies?.Elements(_ns + "dependency").Elements(_ns + "dependency") ?? Enumerable.Empty<XElement>();
+        var referenced = new HashSet<string>(
+            edges.Select(edge => edge.Attribute("ref")?.Value).OfType<string>(),
+            StringComparer.Ordinal);
+
+        return TopLevelComponents
+            .Where(component => GetBomRef(component) is { } bomRef && !referenced.Contains(bomRef))
+            .ToList();
+    }
+
+    public bool IsReachable(string fromBomRef, string toBomRef)
+    {
+        return GetReachable(fromBomRef).Contains(toBomRef);
+    }
+
+    public bool ContainsBomRef(string bomRef)
+    {
+        return AllComponents.Any(component => GetBomRef(component) == bomRef);
+    }
+
+    public bool AddEdge(string parentBomRef, string childBomRef)
+    {
+        var dependencies = Dependencies ?? throw new InvalidOperationException("SBOM has no dependencies element.");
+
+        if (GetChildren(parentBomRef).Contains(childBomRef, StringComparer.Ordinal))
+        {
+            return false;
+        }
+
+        var entry = GetEntries(parentBomRef).FirstOrDefault();
+        if (entry == null)
+        {
+            entry = new XElement(_ns + "dependency", new XAttribute("ref", parentBomRef));
+            dependencies.Add(entry);
+        }
+
+        entry.Add(new XElement(_ns + "dependency", new XAttribute("ref", childBomRef)));
+        return true;
+    }
+
     public ISet<string> GetBomRefsIncludingNested(XElement component)
     {
         var bomRefs = new HashSet<string>(StringComparer.Ordinal);
