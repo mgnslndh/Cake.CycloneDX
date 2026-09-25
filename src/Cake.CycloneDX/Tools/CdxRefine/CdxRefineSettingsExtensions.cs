@@ -74,9 +74,9 @@ public static class CdxRefineSettingsExtensions
         return settings;
     }
 
-    public static CdxRefineSettings WithTypeByPurl(this CdxRefineSettings settings, string typeName, string bomRefPattern)
+    public static CdxRefineSettings WithTypeByPurl(this CdxRefineSettings settings, string typeName, string purlPattern)
     {
-        settings.TypeSettings.Add(new CdxRefineTypeSettings(typeName, new PurlCriteria(bomRefPattern)));
+        settings.TypeSettings.Add(new CdxRefineTypeSettings(typeName, new PurlCriteria(purlPattern)));
         return settings;
     }
     public static CdxRefineSettings WithTypeByBomRef(this CdxRefineSettings settings, string typeName, string bomRefPattern)
