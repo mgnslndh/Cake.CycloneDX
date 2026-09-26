@@ -23,7 +23,6 @@
     <IsPackable>false</IsPackable>
     <Copyright>Copyright © Magnus Lindhe</Copyright>
     <PackageTags>cyclonedx,bom,sbom,cake,cake-addin,cake-build</PackageTags>
-    <PackageIconUrl>https://cdn.jsdelivr.net/gh/cake-contrib/graphics/png/cake-contrib-medium.png</PackageIconUrl>
     <PackageIcon>icon.png</PackageIcon>
     <PackageProjectUrl>https://github.com/mgnslndh/Cake.CycloneDX</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
