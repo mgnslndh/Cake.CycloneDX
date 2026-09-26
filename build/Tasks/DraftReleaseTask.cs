@@ -4,11 +4,12 @@ using Cake.Frosting;
 namespace Build.Tasks;
 
 /// <summary>
-/// Creates the GitHub Release for the pushed tag as a draft (package attached) before anything irreversible
+/// Creates the GitHub Release for the pushed tag as a draft (CHANGELOG notes, package attached) before anything irreversible
 /// happens. A draft is invisible to users. Safe to re-run: an existing draft gets its package replaced, and an
 /// already published Release is left alone.
 /// </summary>
 [TaskName("Draft-Release")]
+[IsDependentOn(typeof(ReleaseNotesTask))]
 public sealed class DraftReleaseTask : FrostingTask<BuildContext>
 {
     public override void Run(BuildContext context)
@@ -20,7 +21,7 @@ public sealed class DraftReleaseTask : FrostingTask<BuildContext>
         {
             case GitHubReleaseState.Missing:
                 context.Information("Creating draft GitHub Release {0}", tag);
-                context.RunGitHubCli(GitHubRelease.CreateDraft(tag, package));
+                context.RunGitHubCli(GitHubRelease.CreateDraft(tag, package, context.ReleaseNotesFile));
                 break;
             case GitHubReleaseState.Draft:
                 context.Information("Reusing draft GitHub Release {0}; replacing its package", tag);

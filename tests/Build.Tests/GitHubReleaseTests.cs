@@ -7,6 +7,8 @@ public sealed class GitHubReleaseTests
 {
     private static readonly FilePath Package = new FilePath("/repo/artifacts/Cake.CycloneDX.1.2.0.nupkg");
 
+    private static readonly FilePath Notes = new FilePath("/repo/artifacts/release-notes.md");
+
     [Theory]
     [InlineData("v1.2.0", false)]
     [InlineData("v1.2.0-preview.1", true)]
@@ -26,16 +28,16 @@ public sealed class GitHubReleaseTests
     public void CreateDraft_For_A_Stable_Tag_Requires_New_Commits()
     {
         Assert.Equal(
-            "release create v1.2.0 \"/repo/artifacts/Cake.CycloneDX.1.2.0.nupkg\" --draft --generate-notes --verify-tag --fail-on-no-commits",
-            GitHubRelease.CreateDraft("v1.2.0", Package).Render());
+            "release create v1.2.0 \"/repo/artifacts/Cake.CycloneDX.1.2.0.nupkg\" --draft --notes-file \"/repo/artifacts/release-notes.md\" --verify-tag --fail-on-no-commits",
+            GitHubRelease.CreateDraft("v1.2.0", Package, Notes).Render());
     }
 
     [Fact]
     public void CreateDraft_For_A_Prerelease_Tag_Marks_It_As_Prerelease()
     {
         Assert.Equal(
-            "release create v1.2.0-preview.1 \"/repo/artifacts/Cake.CycloneDX.1.2.0.nupkg\" --draft --generate-notes --verify-tag --prerelease",
-            GitHubRelease.CreateDraft("v1.2.0-preview.1", Package).Render());
+            "release create v1.2.0-preview.1 \"/repo/artifacts/Cake.CycloneDX.1.2.0.nupkg\" --draft --notes-file \"/repo/artifacts/release-notes.md\" --verify-tag --prerelease",
+            GitHubRelease.CreateDraft("v1.2.0-preview.1", Package, Notes).Render());
     }
 
     [Fact]

@@ -22,6 +22,9 @@ public class BuildContext : FrostingContext
     /// <summary>Gets the directory packages are written to.</summary>
     public DirectoryPath ArtifactsDirectory { get; }
 
+    /// <summary>Gets the file the Release-Notes task writes the GitHub Release notes to.</summary>
+    public FilePath ReleaseNotesFile => ArtifactsDirectory.CombineWithFilePath("release-notes.md");
+
     /// <summary>
     /// Gets the tag being released, from GITHUB_REF_NAME.
     /// </summary>

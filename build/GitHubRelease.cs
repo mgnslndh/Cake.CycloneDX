@@ -34,14 +34,14 @@ public static class GitHubRelease
             .Append("--json").Append("isDraft")
             .Append("--jq").Append(".isDraft");
 
-    /// <summary><c>gh release create --draft</c> with generated notes and the package attached.</summary>
-    public static ProcessArgumentBuilder CreateDraft(string tag, FilePath package)
+    /// <summary><c>gh release create --draft</c> with the notes from a file and the package attached.</summary>
+    public static ProcessArgumentBuilder CreateDraft(string tag, FilePath package, FilePath notesFile)
     {
         var arguments = new ProcessArgumentBuilder()
             .Append("release").Append("create").Append(tag)
             .AppendQuoted(package.FullPath)
             .Append("--draft")
-            .Append("--generate-notes")
+            .Append("--notes-file").AppendQuoted(notesFile.FullPath)
             .Append("--verify-tag");
 
         return IsPrerelease(tag) ? arguments.Append("--prerelease") : arguments.Append("--fail-on-no-commits");
