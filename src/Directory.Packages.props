@@ -10,8 +10,8 @@
     <PackageVersion Include="Cake.Frosting" Version="6.3.0" />
     <PackageVersion Include="CycloneDX.Core" Version="8.0.3" />
     <PackageVersion Include="NSubstitute" Version="6.2.0" />
-    <PackageVersion Include="Cake.Core" Version="6.3.0" />
-    <PackageVersion Include="Cake.Testing" Version="6.3.0" />
+    <PackageVersion Include="Cake.Core" Version="6.0.0" />
+    <PackageVersion Include="Cake.Testing" Version="6.0.0" />
     <PackageVersion Include="NSubstitute.Analyzers.CSharp" Version="1.0.17" />
     <PackageVersion Include="xunit.v3" Version="4.0.1" />
     <PackageVersion Include="xunit.v3.assert" Version="4.0.1" />
