@@ -162,6 +162,19 @@ public sealed class ChangelogReleaseNotesTests
         Assert.Contains("is not newer than '## [1.2.0]'", exception.Message);
     }
 
+    [Theory]
+    [InlineData("1.2.O")] // typo: letter O instead of zero
+    [InlineData("1.2")]
+    public void Extract_Rejects_A_Prerelease_When_The_Newest_Heading_Is_Not_A_Version(string heading)
+    {
+        var changelog = InProgress.Replace("## [1.2.0] - 2026-04-10", $"## [{heading}] - 2026-04-10");
+
+        var result = Record.Exception(() => ChangelogReleaseNotes.Extract(changelog, "v1.0.0-preview.1"));
+
+        var exception = Assert.IsType<CakeException>(result);
+        Assert.Contains($"'## [{heading}]', the newest section in CHANGELOG.md, is not a version", exception.Message);
+    }
+
     [Fact]
     public void Extract_Accepts_The_Next_Preview_After_A_Preview_Section()
     {

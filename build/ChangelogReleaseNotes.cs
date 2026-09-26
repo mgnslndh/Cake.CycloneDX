@@ -66,10 +66,19 @@ public static partial class ChangelogReleaseNotes
                 $"CHANGELOG.md has no '## [{version}]' section. Rename '## [{Unreleased}]' to '## [{version}] - YYYY-MM-DD' before tagging {tag}.");
         }
 
-        if (newest is not null && NuGetVersion.TryParse(newest.Name, out var newestVersion) && newestVersion >= tagVersion)
+        if (newest is not null)
         {
-            throw new CakeException(
-                $"{tag} is not newer than '## [{newest.Name}]', the newest version in CHANGELOG.md.");
+            if (!NuGetVersion.TryParseStrict(newest.Name, out var newestVersion))
+            {
+                throw new CakeException(
+                    $"'## [{newest.Name}]', the newest section in CHANGELOG.md, is not a version like 1.2.3; fix the heading so {tag} can be compared with it.");
+            }
+
+            if (newestVersion >= tagVersion)
+            {
+                throw new CakeException(
+                    $"{tag} is not newer than '## [{newest.Name}]', the newest version in CHANGELOG.md.");
+            }
         }
 
         return RequireNotes(unreleased, Unreleased, tag);
