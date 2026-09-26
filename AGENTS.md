@@ -28,6 +28,11 @@ How this repository applies them:
   assembly-level imports. `AliasNamespaceImportTests` enforces this.
 - **New namespaces:** add a `NamespaceDoc` class for them in `src/Cake.CycloneDX/Namespaces.cs`.
 - **Package metadata:** keep the `cake-addin` tag and the embedded icon in `src/Directory.Build.props`.
+- **README:** it ships in the package as its nuget.org page, so keep links absolute. When you add or
+  change an alias or setting, update its README section and compile-check the examples you touched.
+  They are script-style, so check them as `context.Alias(...)` calls in a scratch project that
+  references the built addin. Nothing tests them automatically. For a stable release, update the
+  install snippets to the new version; the `Release-Notes` gate enforces this.
 - **Testing:** unit-test aliases in `src/Cake.CycloneDX.Tests`. Runner tests prove the packed package
   works on the Cake .NET Tool, Cake.Sdk and Cake Frosting:
   `.\build.ps1 --target RunnerTests` (latest Cake 6.x) and

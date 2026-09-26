@@ -107,6 +107,7 @@ The release checks the CHANGELOG before it builds anything, and stops when it is
 - A stable tag `vX.Y.Z` needs a `[X.Y.Z]` section that is the newest version in the file and isn't empty, and `[Unreleased]` must be empty. Entries left in `[Unreleased]` are part of the tagged commit but would be missing from the notes.
 - A prerelease tag `vX.Y.Z-preview.N` with its own `[X.Y.Z-preview.N]` section follows the same rules.
 - A prerelease tag without its own section uses the `[Unreleased]` section, which must not be empty, since a preview ships the changes gathered there so far. The tag must be newer than the newest version in the file, so a preview of an already released version is rejected.
+- A stable tag also needs the README's install snippets (`#addin …&version=X.Y.Z` and `#:package Cake.CycloneDX@X.Y.Z`) to name `X.Y.Z`, because the README ships in the package as its nuget.org page. Prerelease tags skip this check, so during a preview the README keeps pointing at the latest stable version.
 
 Release notes should describe user-visible change, not list commits or pull requests.
 
@@ -122,7 +123,7 @@ Release notes should describe user-visible change, not list commits or pull requ
 
 1. Finalize version.
 2. Merge release-ready changes.
-3. In `CHANGELOG.md`, rename `[Unreleased]` to `[X.Y.Z] - YYYY-MM-DD`, add a new empty `[Unreleased]` section and update the compare links. Merge that change.
+3. In `CHANGELOG.md`, rename `[Unreleased]` to `[X.Y.Z] - YYYY-MM-DD`, add a new empty `[Unreleased]` section and update the compare links. In `README.md`, update the install snippets to `X.Y.Z` and the supported Cake versions if they changed. Merge that change.
 4. Run `./release.ps1 X.Y.Z` (or `-Bump`/`-Promote`) on that commit. It creates and pushes the tag; the Release workflow builds, publishes the package and creates the GitHub Release with the CHANGELOG section as notes.
 
 ### Preview
@@ -172,7 +173,7 @@ Unless explicitly decided otherwise:
 - Pull requests and pushes to `main` run `build --target All` (build, test, pack) and the runner tests on Cake 6.0.0 and 6.* on Windows, Linux and macOS.
 - The tag push is the review point: there is no manual step between pushing a `v*` tag and the package appearing on nuget.org with a GitHub (pre)release, so review the changes and the notes before tagging. A preview that should not get a GitHub Release (internal or CI-only) must not be tagged.
 - Create and push the tag with `./release.ps1` (PowerShell 7.2+, `git`, `gh` and the .NET SDK), e.g. `./release.ps1 -Bump Minor`, `./release.ps1 -Bump Minor -Prerelease preview` or `./release.ps1 -Promote`. Run it without arguments to see the latest release and suggested next versions; it changes nothing. With a version it checks the branch, working tree, CI status, tag uniqueness and the CHANGELOG gate (see Release Notes Policy), shows a summary and asks before tagging, then follows the Release workflow. Use `-WhatIf` for a dry run. Its version logic in `build/Release.psm1` is tested with Pester 5+: `Invoke-Pester ./tests/Release.Tests.ps1`.
-- Pushing a tag `vX.Y.Z` (or `vX.Y.Z-preview.N`) runs `.github/workflows/release.yml`: `Release-Notes` checks that `CHANGELOG.md` has notes for the tag, then the same `All` build and runner tests run, all in a job without write permissions, then — in a separate `publish` job that only receives the built package — the `Release` target, which runs three steps in this order:
+- Pushing a tag `vX.Y.Z` (or `vX.Y.Z-preview.N`) runs `.github/workflows/release.yml`: `Release-Notes` checks that `CHANGELOG.md` has notes for the tag (and, for a stable tag, that the README installs that version), then the same `All` build and runner tests run, all in a job without write permissions, then — in a separate `publish` job that only receives the built package — the `Release` target, which runs three steps in this order:
   1. `Draft-Release` creates the GitHub Release as a **draft** (CHANGELOG notes, package attached; invisible to users). It refuses if there is no package whose version equals the tag.
   2. `Publish` pushes `artifacts/Cake.CycloneDX.X.Y.Z.nupkg` to nuget.org — the only irreversible step.
   3. `Release` publishes the draft (stable tags become latest; tags containing `-` become prereleases that are not latest).
