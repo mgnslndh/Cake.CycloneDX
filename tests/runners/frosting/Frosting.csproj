@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <!-- RunnerTestsTask sets both; the defaults let the project open and restore on its own. -->
+    <CakeVersion Condition="'$(CakeVersion)' == ''">6.*</CakeVersion>
+    <AddinVersion Condition="'$(AddinVersion)' == ''">*-*</AddinVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Cake.Frosting" Version="$(CakeVersion)" />
+    <PackageReference Include="Cake.CycloneDX" Version="$(AddinVersion)" />
+  </ItemGroup>
+
+</Project>

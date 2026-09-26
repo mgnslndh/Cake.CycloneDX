@@ -24,6 +24,7 @@ public sealed class RunnerTestsTask : FrostingTask<BuildContext>
     [
         new ScriptRunner(),
         new SdkRunner(),
+        new FrostingRunner(),
     ];
 
     public override void Run(BuildContext context)
