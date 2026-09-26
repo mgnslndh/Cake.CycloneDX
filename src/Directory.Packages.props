@@ -8,7 +8,7 @@
     <GlobalPackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.401" PrivateAssets="All" />
     <GlobalPackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556" PrivateAssets="All" />
     <PackageVersion Include="Cake.Frosting" Version="6.3.0" />
-    <PackageVersion Include="CycloneDX.Core" Version="8.0.3" />
+    <PackageVersion Include="CycloneDX.Core" Version="12.1.2" />
     <PackageVersion Include="NSubstitute" Version="6.2.0" />
     <PackageVersion Include="Cake.Core" Version="6.0.0" />
     <PackageVersion Include="Cake.Testing" Version="6.0.0" />
