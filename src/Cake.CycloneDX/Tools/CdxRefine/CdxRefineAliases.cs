@@ -29,7 +29,7 @@ public static class CdxRefineAliases
     /// </summary>
     /// <example>
     /// <code>
-    /// var xml = FileReadText("./artifacts/bom.xml");
+    /// var xml = System.IO.File.ReadAllText("./artifacts/bom.xml");
     /// var refined = CdxRefine(xml, new CdxRefineSettings().WithExcludeByName("^xunit"));
     /// </code>
     /// </example>
@@ -110,7 +110,7 @@ public static class CdxRefineAliases
     /// </summary>
     /// <example>
     /// <code>
-    /// var document = XDocument.Load("./artifacts/bom.xml");
+    /// var document = System.Xml.Linq.XDocument.Load("./artifacts/bom.xml");
     /// CdxRefine(document, new CdxRefineSettings().WithTypeByName("framework", "^Microsoft\\.AspNetCore\\.App$"));
     /// document.Save("./artifacts/bom.xml");
     /// </code>

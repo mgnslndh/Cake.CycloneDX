@@ -30,7 +30,7 @@ public static class CdxDeduplicateAliases
     /// </summary>
     /// <example>
     /// <code>
-    /// var xml = FileReadText("./artifacts/bom.xml");
+    /// var xml = System.IO.File.ReadAllText("./artifacts/bom.xml");
     /// var deduplicated = CdxDeduplicate(xml);
     /// </code>
     /// </example>
@@ -105,7 +105,7 @@ public static class CdxDeduplicateAliases
     /// </summary>
     /// <example>
     /// <code>
-    /// var document = XDocument.Load("./artifacts/bom.xml");
+    /// var document = System.Xml.Linq.XDocument.Load("./artifacts/bom.xml");
     /// CdxDeduplicate(document);
     /// document.Save("./artifacts/bom.xml");
     /// </code>

@@ -11,7 +11,8 @@ namespace Cake.CycloneDX.Tools.CdxCli;
 /// <remarks>
 /// The CycloneDX CLI must be available to Cake. Set <see cref="Cake.Core.Tooling.ToolSettings.ToolPath"/>, or make the
 /// executable available in the Cake tools folder or on the <c>PATH</c> under either its release asset name
-/// (see <see cref="CdxCliExecutable.GetFilename"/>) or the name <c>cyclonedx</c>.
+/// (see <see cref="CdxCliExecutable.GetFilename"/>) or the name <c>cyclonedx</c> with no file extension, on every
+/// operating system.
 /// </remarks>
 [CakeAliasCategory("CycloneDX")]
 public static partial class CdxCliAliases
