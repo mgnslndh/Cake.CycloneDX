@@ -1,50 +1,82 @@
 using System.Text.RegularExpressions;
 using Cake.Core;
+using NuGet.Versioning;
 
 namespace Build;
 
 /// <summary>
 /// Extracts the GitHub Release notes for a tag from a <see href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</see>
-/// CHANGELOG.md: the body of the <c>## [X.Y.Z]</c> section. A prerelease tag without its own section uses the
-/// <c>## [Unreleased]</c> section instead, since a preview ships the changes gathered there so far.
+/// CHANGELOG.md, and acts as the release gate that the CHANGELOG is ready for the tag.
 /// </summary>
+/// <remarks>
+/// <para>
+/// A tag with its own <c>## [X.Y.Z]</c> section releases that section. The section must be the newest version in
+/// the file, and <c>## [Unreleased]</c> must be empty: entries left there are part of the tagged commit but would be
+/// missing from the notes.
+/// </para>
+/// <para>
+/// A prerelease tag without its own section releases the <c>## [Unreleased]</c> section, since a preview ships the
+/// changes gathered there so far. The tag must then be newer than the newest version in the file.
+/// </para>
+/// </remarks>
 public static partial class ChangelogReleaseNotes
 {
     private const string Unreleased = "Unreleased";
 
     /// <summary>
-    /// Gets the release notes for the tag.
+    /// Gets the release notes for the tag, after checking that the CHANGELOG is ready for it.
     /// </summary>
     /// <param name="changelog">The CHANGELOG.md content.</param>
     /// <param name="tag">The release tag, e.g. <c>v1.2.0</c> or <c>v1.2.0-preview.1</c>.</param>
-    /// <returns>The body of the matching section, without its heading or the link references at the end.</returns>
-    /// <exception cref="CakeException">No section matches, or the matching section is empty.</exception>
+    /// <returns>The body of the released section, without its heading or the link references at the end.</returns>
+    /// <exception cref="CakeException">The CHANGELOG is not ready for the tag.</exception>
     public static string Extract(string changelog, string tag)
     {
-        if (string.IsNullOrWhiteSpace(tag) || !tag.StartsWith('v'))
+        if (string.IsNullOrWhiteSpace(tag) || !tag.StartsWith('v') || !NuGetVersion.TryParseStrict(tag[1..], out var tagVersion))
         {
             throw new CakeException($"'{tag}' is not a version tag like v1.2.3.");
         }
 
         var version = tag[1..];
         var sections = ParseSections(changelog);
+        var unreleased = sections.FirstOrDefault(section => IsUnreleased(section.Name))?.Body ?? string.Empty;
+        var newest = sections.FirstOrDefault(section => !IsUnreleased(section.Name));
+        var own = sections.FirstOrDefault(section => string.Equals(section.Name, version, StringComparison.OrdinalIgnoreCase));
 
-        string section;
-        if (sections.TryGetValue(version, out var body))
+        if (own is not null)
         {
-            section = version;
+            if (!ReferenceEquals(own, newest))
+            {
+                throw new CakeException(
+                    $"'## [{version}]' must be the newest version in CHANGELOG.md, but '## [{newest!.Name}]' is above it.");
+            }
+
+            if (unreleased.Length > 0)
+            {
+                throw new CakeException(
+                    $"'## [{Unreleased}]' in CHANGELOG.md still has entries. They are part of {tag} but would be missing from its release notes; move them into '## [{version}]'.");
+            }
+
+            return RequireNotes(own.Body, version, tag);
         }
-        else if (GitHubRelease.IsPrerelease(tag) && sections.TryGetValue(Unreleased, out body))
-        {
-            section = Unreleased;
-        }
-        else
+
+        if (!tagVersion.IsPrerelease)
         {
             throw new CakeException(
                 $"CHANGELOG.md has no '## [{version}]' section. Rename '## [{Unreleased}]' to '## [{version}] - YYYY-MM-DD' before tagging {tag}.");
         }
 
-        var notes = body.Trim();
+        if (newest is not null && NuGetVersion.TryParse(newest.Name, out var newestVersion) && newestVersion >= tagVersion)
+        {
+            throw new CakeException(
+                $"{tag} is not newer than '## [{newest.Name}]', the newest version in CHANGELOG.md.");
+        }
+
+        return RequireNotes(unreleased, Unreleased, tag);
+    }
+
+    private static string RequireNotes(string notes, string section, string tag)
+    {
         if (notes.Length == 0)
         {
             throw new CakeException($"The '## [{section}]' section of CHANGELOG.md is empty; there is nothing to release in {tag}.");
@@ -53,9 +85,12 @@ public static partial class ChangelogReleaseNotes
         return notes;
     }
 
-    private static Dictionary<string, string> ParseSections(string changelog)
+    private static bool IsUnreleased(string name) => string.Equals(name, Unreleased, StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>Gets the <c>## [name]</c> sections in file order, with trimmed bodies.</summary>
+    private static List<Section> ParseSections(string changelog)
     {
-        var sections = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var sections = new List<Section>();
         string? current = null;
         var lines = new List<string>();
 
@@ -82,7 +117,7 @@ public static partial class ChangelogReleaseNotes
         {
             if (current is not null)
             {
-                sections.TryAdd(current, string.Join("\n", lines));
+                sections.Add(new Section(current, string.Join("\n", lines).Trim()));
             }
 
             lines.Clear();
@@ -96,4 +131,6 @@ public static partial class ChangelogReleaseNotes
     // "[1.2.0]: https://github.com/..." link reference definitions at the end of the file
     [GeneratedRegex(@"^\[[^\]]+\]:\s")]
     private static partial Regex LinkReference();
+
+    private sealed record Section(string Name, string Body);
 }

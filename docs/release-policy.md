@@ -102,7 +102,11 @@ That means:
 - When releasing, rename `[Unreleased]` to `[X.Y.Z] - YYYY-MM-DD`, add a new empty `[Unreleased]` section and update the compare links at the bottom.
 - Use that version's section as the GitHub Release notes.
 
-A prerelease tag such as `vX.Y.Z-preview.N` uses its own `[X.Y.Z-preview.N]` section when there is one, and otherwise the `[Unreleased]` section, since a preview ships the changes gathered there so far. A stable tag requires its `[X.Y.Z]` section; the release stops before publishing anything when the section is missing or empty.
+The release checks the CHANGELOG before it builds anything, and stops when it isn't ready for the tag:
+
+- A stable tag `vX.Y.Z` needs a `[X.Y.Z]` section that is the newest version in the file and isn't empty, and `[Unreleased]` must be empty. Entries left in `[Unreleased]` are part of the tagged commit but would be missing from the notes.
+- A prerelease tag `vX.Y.Z-preview.N` with its own `[X.Y.Z-preview.N]` section follows the same rules.
+- A prerelease tag without its own section uses the `[Unreleased]` section, which must not be empty, since a preview ships the changes gathered there so far. The tag must be newer than the newest version in the file, so a preview of an already released version is rejected.
 
 Release notes should describe user-visible change, not list commits or pull requests.
 

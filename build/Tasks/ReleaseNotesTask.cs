@@ -5,9 +5,10 @@ using Cake.Frosting;
 namespace Build.Tasks;
 
 /// <summary>
-/// Writes the GitHub Release notes for the pushed tag to artifacts/release-notes.md, from the matching
-/// CHANGELOG.md section. Fails when the section is missing or empty, so a release without notes stops before
-/// anything is published. Requires GITHUB_REF_NAME.
+/// The release gate for CHANGELOG.md: checks that it is ready for the pushed tag and writes the tag's section to
+/// artifacts/release-notes.md as the GitHub Release notes. Fails when the section is missing, empty or not the
+/// newest version, or when [Unreleased] still has entries a stable release would leave out, so the release stops
+/// before anything is built or published. Requires GITHUB_REF_NAME. See <see cref="ChangelogReleaseNotes"/>.
 /// </summary>
 [TaskName("Release-Notes")]
 public sealed class ReleaseNotesTask : FrostingTask<BuildContext>
