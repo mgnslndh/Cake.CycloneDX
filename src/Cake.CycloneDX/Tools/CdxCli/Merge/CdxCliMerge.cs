@@ -101,6 +101,11 @@ public class CdxCliMerge : CdxCliTool<CdxCliMergeSettings>
             builder.Append("--hierarchical");
         }
 
+        if (settings.Group is not null)
+        {
+            builder.AppendSwitchQuoted("--group", settings.Group);
+        }
+
         if (settings.Name is not null)
         {
             builder.AppendSwitchQuoted("--name", settings.Name);

@@ -31,11 +31,8 @@ public class CdxCliMergeSettings : CdxCliSettings
     public bool Hierarchical { get; set; }
 
     /// <summary>
-    /// Gets or sets the group of the software the merged BOM describes.
+    /// Gets or sets the group of the software the merged BOM describes, such as a vendor or organization name.
     /// </summary>
-    /// <remarks>
-    /// This value is not currently passed to the CycloneDX CLI.
-    /// </remarks>
     public string? Group { get; set; }
 
     /// <summary>
