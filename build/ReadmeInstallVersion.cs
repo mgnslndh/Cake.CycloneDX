@@ -6,8 +6,8 @@ namespace Build;
 
 /// <summary>
 /// Checks that the README's install snippets name the version being released, since the README ships in the
-/// package and is its nuget.org page. Only stable tags are checked: during a preview the README keeps pointing at
-/// the latest stable version.
+/// package and is its nuget.org page. Only stable tags are checked: during a preview the README can install either
+/// the preview or the latest stable version.
 /// </summary>
 public static partial class ReadmeInstallVersion
 {
