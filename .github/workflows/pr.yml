@@ -47,3 +47,19 @@ jobs:
         run: dotnet tool install -g CycloneDX --version 6.2.0
       - name: Run runner tests (Cake ${{ matrix.cake }})
         run: dotnet run --project build/Build.csproj -- --target RunnerTests --cake-version "${{ matrix.cake }}" --verbosity Diagnostic
+
+  release-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Test release.ps1 version logic
+        shell: pwsh
+        run: |
+          Import-Module Pester -MinimumVersion 5.0
+          $config = New-PesterConfiguration
+          $config.Run.Path = './tests/Release.Tests.ps1'
+          $config.Run.Exit = $true
+          $config.Output.Verbosity = 'Detailed'
+          Invoke-Pester -Configuration $config
