@@ -79,7 +79,7 @@ public sealed class RunnerTestsTask : FrostingTask<BuildContext>
         }
         catch (Exception exception)
         {
-            result.Failures.Add($"runner threw: {exception.Message}");
+            result.Failures.Add($"runner threw {exception.GetType().Name}: {exception.Message}");
             return result;
         }
 
@@ -96,7 +96,16 @@ public sealed class RunnerTestsTask : FrostingTask<BuildContext>
             return result;
         }
 
-        result.Sbom = XDocument.Load(sbomFile.FullPath);
+        try
+        {
+            result.Sbom = XDocument.Load(sbomFile.FullPath);
+        }
+        catch (Exception exception)
+        {
+            result.Failures.Add($"could not read refined.cdx.xml: {exception.Message}");
+            return result;
+        }
+
         result.Failures.AddRange(SbomAssertions.Check(result.Sbom));
         return result;
     }
@@ -160,9 +169,13 @@ public sealed class RunnerTestsTask : FrostingTask<BuildContext>
     private static void EnsureCycloneDxDotNetTool(ICakeContext context)
     {
         int exitCode;
+        IEnumerable<string> redirectedStandardOutput = [];
         try
         {
-            exitCode = context.StartProcess("dotnet-CycloneDX", new ProcessSettings { Arguments = "--version" });
+            exitCode = context.StartProcess(
+                "dotnet-CycloneDX",
+                new ProcessSettings { Arguments = "--version", RedirectStandardOutput = true },
+                out redirectedStandardOutput);
         }
         catch (Exception)
         {
@@ -173,5 +186,8 @@ public sealed class RunnerTestsTask : FrostingTask<BuildContext>
         {
             throw new CakeException("The CycloneDX .NET tool is not installed. Install it with: dotnet tool install -g CycloneDX");
         }
+
+        var version = string.Join(" ", redirectedStandardOutput).Trim();
+        context.Information("CycloneDX .NET tool: {0}", version);
     }
 }

@@ -20,7 +20,17 @@ internal static class NuGetConfig
                     "packageSources",
                     new XElement("clear"),
                     new XElement("add", new XAttribute("key", "local"), new XAttribute("value", localFeed.FullPath)),
-                    new XElement("add", new XAttribute("key", "nuget.org"), new XAttribute("value", "https://api.nuget.org/v3/index.json")))))
+                    new XElement("add", new XAttribute("key", "nuget.org"), new XAttribute("value", "https://api.nuget.org/v3/index.json"))),
+                new XElement(
+                    "packageSourceMapping",
+                    new XElement(
+                        "packageSource",
+                        new XAttribute("key", "local"),
+                        new XElement("package", new XAttribute("pattern", "Cake.CycloneDX"))),
+                    new XElement(
+                        "packageSource",
+                        new XAttribute("key", "nuget.org"),
+                        new XElement("package", new XAttribute("pattern", "*"))))))
             .Save(path.FullPath);
 
         return path;
