@@ -28,20 +28,23 @@ the [CycloneDX .NET tool](https://github.com/CycloneDX/cyclonedx-dotnet) and the
 Cake script (.NET Tool runner):
 
 ```csharp
-#addin nuget:?package=Cake.CycloneDX&version=0.0.5
+#addin nuget:?package=Cake.CycloneDX&version=0.1.0-preview.1&prerelease
 ```
 
 Cake SDK (file-based `dotnet cake.cs`):
 
 ```csharp
 #:sdk Cake.Sdk@6.3.0
-#:package Cake.CycloneDX@0.0.5
+#:package Cake.CycloneDX@0.1.0-preview.1
 ```
 
 Cake Frosting: add a package reference to `Cake.CycloneDX`. The aliases are extension methods on the context, e.g.
 `context.CdxDotNet(...)`.
 
-The addin targets `net8.0`, `net9.0` and `net10.0` and supports Cake 6.0.0 and later (0.0.5 needs Cake 6.1.0). Every
+The snippets install the preview, which has everything this README describes. The latest stable version is 0.0.5;
+it lacks some of the `CdxRefine` features below and needs Cake 6.1.0.
+
+The addin targets `net8.0`, `net9.0` and `net10.0` and supports Cake 6.0.0 and later. Every
 build tests the packed addin on all three runners with Cake 6.0.0 and the latest 6.x, on Windows, Linux and macOS.
 
 This README describes the `main` branch. See the [changelog](#changelog) for what each version includes.

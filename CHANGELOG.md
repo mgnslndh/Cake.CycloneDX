@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0-preview.1] - 2026-09-26
+
 ### Added
 
 - `CdxRefine` can exclude components by name, purl or bom-ref with `WithExcludeByName`,
@@ -55,5 +57,6 @@ First public release.
 - The CycloneDX tools are resolved on Windows, Linux and macOS.
 - Targets `net8.0`, `net9.0` and `net10.0`, for Cake 6.1.0 and later.
 
-[Unreleased]: https://github.com/mgnslndh/Cake.CycloneDX/compare/v0.0.5...HEAD
+[Unreleased]: https://github.com/mgnslndh/Cake.CycloneDX/compare/v0.1.0-preview.1...HEAD
+[0.1.0-preview.1]: https://github.com/mgnslndh/Cake.CycloneDX/compare/v0.0.5...v0.1.0-preview.1
 [0.0.5]: https://github.com/mgnslndh/Cake.CycloneDX/releases/tag/v0.0.5
