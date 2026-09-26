@@ -274,3 +274,19 @@ Unless explicitly decided otherwise:
 - every public stable NuGet package gets a GitHub Release
 - every externally shared preview package gets a GitHub prerelease
 - internal, CI, and temporary packages do not get GitHub Releases
+
+## Automation In This Repository
+
+- Pull requests and pushes to `main` run `build --target All` (build, test, pack) and the runner tests on Cake 6.0.0 and 6.* on Windows, Linux and macOS.
+- The tag push is the review point: there is no manual step between pushing a `v*` tag and the package appearing on nuget.org with a GitHub (pre)release, so review the changes and the notes before tagging. A preview that should not get a GitHub Release (internal or CI-only) must not be tagged.
+- Pushing a tag `vX.Y.Z` (or `vX.Y.Z-preview.N`) runs `.github/workflows/release.yml`: the same `All` build and runner tests in a job without write permissions, then — in a separate `publish` job that only receives the built package — the `Release` target, which runs three steps in this order:
+  1. `Draft-Release` creates the GitHub Release as a **draft** (package attached; invisible to users). It refuses if there is no package whose version equals the tag.
+  2. `Publish` pushes `artifacts/Cake.CycloneDX.X.Y.Z.nupkg` to nuget.org — the only irreversible step.
+  3. `Release` publishes the draft (stable tags become latest; tags containing `-` become prereleases that are not latest).
+- If the release job fails, re-run it ("Re-run failed jobs"): every step is safe to repeat. An existing draft is reused and gets its package replaced, NuGet skips a version that is already there, and an already published Release is left alone. If the failure happened before `Publish`, you can instead delete the draft and the tag (`gh release delete vX.Y.Z --cleanup-tag`) and release again.
+
+## Publishing Setup (one-time, repository owner)
+
+1. Create the GitHub environment `Production` in `mgnslndh/Cake.CycloneDX`.
+2. Add the secret `NUGET_USER` (the nuget.org account name) to that environment.
+3. On nuget.org, add a Trusted Publishing policy for `Cake.CycloneDX`: owner `mgnslndh`, repository `Cake.CycloneDX`, workflow file `release.yml`, environment `Production`.

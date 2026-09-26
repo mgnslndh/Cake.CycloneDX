@@ -19,5 +19,12 @@ public sealed class TestTask : FrostingTask<BuildContext>
             NoBuild = true,
             PathType = DotNetTestPathType.Solution
         });
+
+        context.DotNetTest("./tests/Build.Tests/Build.Tests.csproj", new DotNetTestSettings
+        {
+            Configuration = "Release",
+            Verbosity = DotNetVerbosity.Minimal,
+            PathType = DotNetTestPathType.Project
+        });
     }
 }
