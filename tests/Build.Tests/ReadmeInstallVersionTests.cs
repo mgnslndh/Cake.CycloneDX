@@ -30,12 +30,32 @@ public sealed class ReadmeInstallVersionTests
     }
 
     [Fact]
+    public void Check_Handles_Windows_Line_Endings()
+    {
+        var result = Record.Exception(() => ReadmeInstallVersion.Check(Readme.ReplaceLineEndings("\r\n"), "v1.2.0"));
+
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public void Check_Accepts_Other_Addin_Query_Parameters()
+    {
+        var readme = Readme.Replace("&version=1.2.0", "&version=1.2.0&loaddependencies=true");
+
+        var result = Record.Exception(() => ReadmeInstallVersion.Check(readme, "v1.2.0"));
+
+        Assert.Null(result);
+    }
+
+    [Fact]
     public void Check_Rejects_Snippets_That_Name_Another_Version()
     {
         var result = Record.Exception(() => ReadmeInstallVersion.Check(Readme, "v1.3.0"));
 
         var exception = Assert.IsType<CakeException>(result);
-        Assert.Contains("installs Cake.CycloneDX 1.2.0; update its install snippets to 1.3.0", exception.Message);
+        Assert.Contains("must install Cake.CycloneDX 1.3.0 before tagging v1.3.0", exception.Message);
+        Assert.Contains("'#addin nuget:?package=Cake.CycloneDX&version=1.2.0' installs 1.2.0", exception.Message);
+        Assert.Contains("'#:package Cake.CycloneDX@1.2.0' installs 1.2.0", exception.Message);
     }
 
     [Fact]
@@ -46,7 +66,46 @@ public sealed class ReadmeInstallVersionTests
         var result = Record.Exception(() => ReadmeInstallVersion.Check(readme, "v1.2.0"));
 
         var exception = Assert.IsType<CakeException>(result);
-        Assert.Contains("installs Cake.CycloneDX 1.1.0;", exception.Message);
+        Assert.Contains("'#:package Cake.CycloneDX@1.1.0' installs 1.1.0", exception.Message);
+        Assert.DoesNotContain("#addin", exception.Message);
+    }
+
+    [Theory]
+    [InlineData("#addin nuget:?package=Cake.CycloneDX&version=1.2.0", "#addin nuget:?package=Cake.CycloneDX", "'#addin nuget:?package=Cake.CycloneDX' has no version")]
+    [InlineData("#addin nuget:?package=Cake.CycloneDX&version=1.2.0", "#addin nuget:?package=Cake.CycloneDX&prerelease", "'#addin nuget:?package=Cake.CycloneDX&prerelease' has no version")]
+    [InlineData("#:package Cake.CycloneDX@1.2.0", "#:package Cake.CycloneDX", "'#:package Cake.CycloneDX' has no version")]
+    public void Check_Rejects_A_Versionless_Snippet(string snippet, string versionless, string problem)
+    {
+        var readme = Readme.Replace(snippet, versionless);
+
+        var result = Record.Exception(() => ReadmeInstallVersion.Check(readme, "v1.2.0"));
+
+        var exception = Assert.IsType<CakeException>(result);
+        Assert.Contains(problem, exception.Message);
+    }
+
+    [Fact]
+    public void Check_Rejects_A_Versionless_Snippet_Next_To_A_Matching_One()
+    {
+        var readme = Readme + "\n\n```csharp\n#addin nuget:?package=Cake.CycloneDX\n```\n";
+
+        var result = Record.Exception(() => ReadmeInstallVersion.Check(readme, "v1.2.0"));
+
+        var exception = Assert.IsType<CakeException>(result);
+        Assert.Contains("'#addin nuget:?package=Cake.CycloneDX' has no version", exception.Message);
+    }
+
+    [Theory]
+    [InlineData("#addin nuget:?package=Cake.CycloneDX&version=1.2.0", "no '#addin nuget:?package=Cake.CycloneDX&version=…' snippet")]
+    [InlineData("#:package Cake.CycloneDX@1.2.0", "no '#:package Cake.CycloneDX@…' snippet")]
+    public void Check_Requires_Both_Install_Forms(string removed, string problem)
+    {
+        var readme = Readme.Replace(removed, string.Empty);
+
+        var result = Record.Exception(() => ReadmeInstallVersion.Check(readme, "v1.2.0"));
+
+        var exception = Assert.IsType<CakeException>(result);
+        Assert.Contains(problem, exception.Message);
     }
 
     [Fact]
@@ -55,7 +114,8 @@ public sealed class ReadmeInstallVersionTests
         var result = Record.Exception(() => ReadmeInstallVersion.Check("# Cake.CycloneDX", "v1.2.0"));
 
         var exception = Assert.IsType<CakeException>(result);
-        Assert.Contains("has no install snippet", exception.Message);
+        Assert.Contains("no '#addin", exception.Message);
+        Assert.Contains("no '#:package", exception.Message);
     }
 
     [Theory]
@@ -71,7 +131,9 @@ public sealed class ReadmeInstallVersionTests
     [Fact]
     public void Check_Ignores_Other_Packages()
     {
-        var readme = Readme.Replace("#:sdk Cake.Sdk@6.3.0", "#:sdk Cake.Sdk@9.9.9");
+        var readme = Readme
+            .Replace("#:sdk Cake.Sdk@6.3.0", "#:sdk Cake.Sdk@9.9.9")
+            + "\n\n```csharp\n#addin nuget:?package=Cake.CycloneDX.Extras&version=0.1.0\n#:package Cake.CycloneDXish@0.1.0\n```\n";
 
         var result = Record.Exception(() => ReadmeInstallVersion.Check(readme, "v1.2.0"));
 
