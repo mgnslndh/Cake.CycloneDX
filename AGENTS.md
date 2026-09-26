@@ -36,6 +36,24 @@ How this repository applies them:
   pipeline in `script/build.cake` and `sdk/cake.cs` identical after the `// --- pipeline ---` line.
   CI runs them on Windows, Linux and macOS for both versions.
 
+## Changelog
+
+`CHANGELOG.md` follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and is the source of
+the release notes (see `docs/release-policy.md`). Update it in the same change as the work:
+
+- **What to add:** any change a user of the package could notice, such as new or changed aliases and
+  settings, bug fixes, supported Cake versions, target frameworks, performance and package contents.
+  Leave out CI, tests, the repository's own build, refactoring and internal docs.
+- **Where:** under `## [Unreleased]`, in `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed` or
+  `Security`. Create the subsection if it isn't there, and keep them in that order.
+- **How:** one bullet per change, written for the addin's users rather than as a commit message.
+  Name the alias or setting in backticks, and link the issue when there is one, such as
+  `([#7](https://github.com/mgnslndh/Cake.CycloneDX/issues/7))`. Update an existing bullet rather
+  than adding a second one for the same feature.
+- **Breaking changes:** start the bullet with `**Breaking:**` and say how to update. This includes
+  renamed public parameters, since build scripts can pass them by name.
+- **Don't** add version headings or dates. Those are added when a release is tagged.
+
 ## Style and Analyzers
 
 This project enforces **StyleCop** rules as **errors** during the full `.\build.ps1` build
