@@ -6,9 +6,40 @@ using Cake.Core.IO;
 
 namespace Cake.CycloneDX.Tools.CdxDeduplicate;
 
+/// <summary>
+/// Contains functionality for removing duplicate components from a CycloneDX XML BOM, for example after merging
+/// BOMs with <c>CdxCliMerge</c>.
+/// </summary>
+/// <remarks>
+/// <para>
+/// Only the top-level components of <c>/bom/components</c> are compared. When several components share a key, the first
+/// one is kept and the others are removed, and a warning is logged for each such group. Components that have no key
+/// are kept but moved after the deduplicated components.
+/// </para>
+/// <para>
+/// When deduplicating by purl, <c>&lt;dependency ref="..."&gt;</c> elements that pointed to a removed component's
+/// bom-ref are redirected to the bom-ref of the component that was kept.
+/// </para>
+/// <para>Only the XML format is supported.</para>
+/// </remarks>
 [CakeAliasCategory("CycloneDX")]
 public static class CdxDeduplicateAliases
 {
+    /// <summary>
+    /// Removes duplicate components from a CycloneDX BOM given as an XML string.
+    /// </summary>
+    /// <example>
+    /// <code>
+    /// var xml = FileReadText("./artifacts/bom.xml");
+    /// var deduplicated = CdxDeduplicate(xml);
+    /// </code>
+    /// </example>
+    /// <param name="context">The context.</param>
+    /// <param name="xml">The BOM as CycloneDX XML.</param>
+    /// <param name="settings">The settings, or <see langword="null"/> to deduplicate by both bom-ref and purl.</param>
+    /// <returns>The deduplicated BOM as CycloneDX XML.</returns>
+    /// <exception cref="System.Xml.XmlException"><paramref name="xml"/> is not well-formed XML.</exception>
+    /// <exception cref="InvalidOperationException">The BOM has no root element.</exception>
     [CakeMethodAlias]
     public static string CdxDeduplicate(this ICakeContext context, string xml, CdxDeduplicateSettings? settings = null)
     {
@@ -17,6 +48,28 @@ public static class CdxDeduplicateAliases
         return document.ToString(SaveOptions.None);
     }
 
+    /// <summary>
+    /// Removes duplicate components from a CycloneDX XML BOM file and writes the result to another file.
+    /// </summary>
+    /// <remarks>
+    /// The output directory is created if it does not exist. The input and output paths may be the same file.
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// CdxDeduplicate(
+    ///     "./artifacts/merged.xml",
+    ///     "./artifacts/bom.xml",
+    ///     new CdxDeduplicateSettings { DeduplicateByBomRef = false });
+    /// </code>
+    /// </example>
+    /// <param name="context">The context.</param>
+    /// <param name="inputPath">The BOM file to read.</param>
+    /// <param name="outputPath">The file to write the deduplicated BOM to.</param>
+    /// <param name="settings">The settings, or <see langword="null"/> to deduplicate by both bom-ref and purl.</param>
+    /// <exception cref="ArgumentException"><paramref name="inputPath"/> or <paramref name="outputPath"/> is empty.</exception>
+    /// <exception cref="CakeException">The input file does not exist.</exception>
+    /// <exception cref="System.Xml.XmlException">The input file is not well-formed XML.</exception>
+    /// <exception cref="InvalidOperationException">The BOM has no root element.</exception>
     [CakeMethodAlias]
     public static void CdxDeduplicate(this ICakeContext context, FilePath inputPath, FilePath outputPath, CdxDeduplicateSettings? settings = null)
     {
@@ -47,6 +100,20 @@ public static class CdxDeduplicateAliases
         document.Save(writeStream);
     }
 
+    /// <summary>
+    /// Removes duplicate components from a CycloneDX XML BOM, modifying the document in place.
+    /// </summary>
+    /// <example>
+    /// <code>
+    /// var document = XDocument.Load("./artifacts/bom.xml");
+    /// CdxDeduplicate(document);
+    /// document.Save("./artifacts/bom.xml");
+    /// </code>
+    /// </example>
+    /// <param name="context">The context.</param>
+    /// <param name="document">The BOM to deduplicate.</param>
+    /// <param name="settings">The settings, or <see langword="null"/> to deduplicate by both bom-ref and purl.</param>
+    /// <exception cref="InvalidOperationException">The BOM has no root element.</exception>
     [CakeMethodAlias]
     public static void CdxDeduplicate(this ICakeContext context, XDocument document, CdxDeduplicateSettings? settings = null)
     {
@@ -220,8 +287,20 @@ public static class CdxDeduplicateAliases
     }
 }
 
+/// <summary>
+/// Contains settings used by the <c>CdxDeduplicate</c> aliases.
+/// </summary>
 public class CdxDeduplicateSettings
 {
+    /// <summary>
+    /// Gets or sets a value indicating whether components with the same <c>bom-ref</c> attribute are deduplicated.
+    /// Defaults to <see langword="true"/>. This step runs first.
+    /// </summary>
     public bool DeduplicateByBomRef { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether components with the same <c>purl</c> are deduplicated.
+    /// Defaults to <see langword="true"/>. Purls are compared case-insensitively, ignoring leading and trailing white space.
+    /// </summary>
     public bool DeduplicateByPurl { get; set; } = true;
 }

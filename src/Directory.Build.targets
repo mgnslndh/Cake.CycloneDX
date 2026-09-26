@@ -1,0 +1,8 @@
+<Project>
+
+  <!-- Documentation rules only apply to projects that ship an XML documentation file (the addin). -->
+  <PropertyGroup Condition=" '$(GenerateDocumentationFile)' != 'true' ">
+    <NoWarn>$(NoWarn);SA0001;SA1600;SA1601;SA1602</NoWarn>
+  </PropertyGroup>
+
+</Project>
