@@ -167,19 +167,8 @@ public static class CdxRefineAliases
 
     private static void RefineComponentGroups(ICakeContext context, XDocument document, XNamespace ns, IEnumerable<CdxRefineGroupSettings> settings)
     {
-        var metadataElement = document.Descendants(ns + "metadata").FirstOrDefault();
-        if (metadataElement == null)
-        {
-            return;
-        }
-
-        var metadataComponentElement = metadataElement.Element(ns + "component");
-
+        XElement? metadataComponentElement = GetMetadata(document, ns);
         var componentsParent = document.Root?.Element(ns + "components");
-        if (componentsParent == null)
-        {
-            return;
-        }
 
         foreach (var groupSettings in settings)
         {
@@ -188,13 +177,16 @@ public static class CdxRefineAliases
                 AssignGroup(context, metadataComponentElement, ns, groupSettings.Group);
             }
 
-            var matchedComponents = componentsParent.Elements(ns + "component")
-                .Where(componentElement => groupSettings.Criteria.IsMatch(componentElement))
-                .ToList();
-
-            foreach (var matchedComponent in matchedComponents)
+            if (componentsParent != null)
             {
-                AssignGroup(context, matchedComponent, ns, groupSettings.Group);
+                var matchedComponents = componentsParent.Elements(ns + "component")
+                    .Where(componentElement => groupSettings.Criteria.IsMatch(componentElement))
+                    .ToList();
+
+                foreach (var matchedComponent in matchedComponents)
+                {
+                    AssignGroup(context, matchedComponent, ns, groupSettings.Group);
+                }
             }
         }
     }

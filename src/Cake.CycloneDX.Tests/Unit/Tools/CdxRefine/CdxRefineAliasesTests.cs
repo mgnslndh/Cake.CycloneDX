@@ -71,6 +71,56 @@ public class CdxRefineAliasTests
     }
 
     [Fact]
+    public void ShouldAssignGroupToComponentsWhenBomHasNoMetadata()
+    {
+        const string xml = """
+                           <bom xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" serialNumber="urn:uuid:dc1e8435-1749-4a34-b81a-17d3a56f9032" version="1" xmlns="http://cyclonedx.org/schema/bom/1.6">
+                           <components>
+                           <component type="library" bom-ref="pkg:nuget/Newtonsoft.Json@13.0.3">
+                             <name>Newtonsoft.Json</name>
+                             <purl>pkg:nuget/Newtonsoft.Json@13.0.3</purl>
+                           </component>
+                           </components>
+                           </bom>
+                           """;
+
+        var context = Substitute.For<ICakeContext>();
+        var settings = new CdxRefineSettings()
+            .WithGroupByName("JamesNK", "^Newtonsoft");
+        var refined = context.CdxRefine(xml, settings);
+
+        var doc = System.Xml.Linq.XDocument.Parse(refined);
+        System.Xml.Linq.XNamespace ns = doc.Root!.Name.Namespace;
+        var component = doc.Descendants(ns + "component").Single();
+        Assert.Equal("JamesNK", component.Element(ns + "group")?.Value);
+    }
+
+    [Fact]
+    public void ShouldAssignGroupToMetadataComponentWhenBomHasNoComponents()
+    {
+        const string xml = """
+                           <bom xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" serialNumber="urn:uuid:dc1e8435-1749-4a34-b81a-17d3a56f9032" version="1" xmlns="http://cyclonedx.org/schema/bom/1.6">
+                           <metadata>
+                           <component type="application" bom-ref="MyApp@1.0.0">
+                             <name>MyApp</name>
+                             <version>1.0.0</version>
+                           </component>
+                           </metadata>
+                           </bom>
+                           """;
+
+        var context = Substitute.For<ICakeContext>();
+        var settings = new CdxRefineSettings()
+            .WithGroupByName("com.example", "^MyApp$");
+        var refined = context.CdxRefine(xml, settings);
+
+        var doc = System.Xml.Linq.XDocument.Parse(refined);
+        System.Xml.Linq.XNamespace ns = doc.Root!.Name.Namespace;
+        var metadataComponent = doc.Root.Element(ns + "metadata")!.Element(ns + "component")!;
+        Assert.Equal("com.example", metadataComponent.Element(ns + "group")?.Value);
+    }
+
+    [Fact]
     public void ShouldThrowCakeExceptionIfInputFileDoesNotExist()
     {
         var environment = FakeEnvironment.CreateUnixEnvironment();
