@@ -26,6 +26,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `CdxRefine` resolves dependency reachability much faster on large SBOMs.
 - **Breaking:** the second parameter of `WithTypeByPurl` was renamed from `bomRefPattern` to
   `purlPattern`. Update calls that pass it as a named argument.
+- The package README now covers installation on each Cake runner, the CycloneDX tools the aliases
+  need and how they are found, and every alias, starting with a complete SBOM pipeline.
 
 ### Fixed
 
