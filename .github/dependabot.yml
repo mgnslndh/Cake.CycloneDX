@@ -1,0 +1,33 @@
+# Weekly, grouped version updates. Security updates are enabled separately in the repository settings.
+# Not covered here (bump by hand): the CycloneDX .NET tool version in .github/actions/setup-build/action.yml and the
+# CycloneDX CLI version in build/Tasks/RunnerTestsTask.cs. tests/runners is left out on purpose: the runner tests
+# assert the SBOM of its scenario projects, whose package versions are fixed.
+version: 2
+updates:
+  - package-ecosystem: nuget
+    directories:
+      - /src
+      - /build
+      - /tests/Build.Tests
+    schedule:
+      interval: weekly
+    ignore:
+      # The addin references the lowest Cake version with API compatibility to the latest Cake (see AGENTS.md);
+      # the tests use the matching Cake.Testing. Raise these deliberately.
+      - dependency-name: Cake.Core
+      - dependency-name: Cake.Testing
+    groups:
+      nuget:
+        patterns:
+          - "*"
+
+  - package-ecosystem: github-actions
+    directories:
+      - /
+      - /.github/actions/setup-build
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns:
+          - "*"
