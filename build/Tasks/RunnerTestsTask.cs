@@ -23,10 +23,13 @@ public sealed class RunnerTestsTask : FrostingTask<BuildContext>
     private static readonly IRunner[] Runners =
     [
         new ScriptRunner(),
+        new SdkRunner(),
     ];
 
     public override void Run(BuildContext context)
     {
+        EnsureIdenticalScriptPipelines(context);
+
         var cakeVersion = CakeVersionResolver.Resolve(context.Argument("cake-version", "6.*"));
         var addinVersion = ThisAssembly.PackageVersion;
         var root = context.Environment.WorkingDirectory;
@@ -137,6 +140,19 @@ public sealed class RunnerTestsTask : FrostingTask<BuildContext>
         if (results.Any(result => !result.Passed))
         {
             throw new CakeException("Runner tests failed. See the summary above.");
+        }
+    }
+
+    private static void EnsureIdenticalScriptPipelines(ICakeContext context)
+    {
+        var runners = context.Environment.WorkingDirectory.Combine("tests/runners");
+        var script = ScriptTemplate.GetPipeline(runners.CombineWithFilePath("script/build.cake"));
+        var sdk = ScriptTemplate.GetPipeline(runners.CombineWithFilePath("sdk/cake.cs"));
+        if (!string.Equals(script, sdk, StringComparison.Ordinal))
+        {
+            throw new CakeException(
+                "The pipelines in tests/runners/script/build.cake and tests/runners/sdk/cake.cs differ. "
+                + $"Everything after '{ScriptTemplate.PipelineMarker}' must be identical.");
         }
     }
 
