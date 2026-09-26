@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-action.json
+name: Set up build
+description: Installs the .NET SDK from global.json and the CycloneDX .NET tool. Tool versions are pinned here, once for all workflows.
+
+inputs:
+  cyclonedx-version:
+    # The CycloneDX CLI used by the runner tests is downloaded by the build itself; its version is in
+    # build/Tasks/RunnerTestsTask.cs.
+    description: Version of the CycloneDX .NET tool (dotnet tool install -g CycloneDX).
+    default: 6.2.0
+
+runs:
+  using: composite
+  steps:
+    - name: Install .NET SDK
+      uses: actions/setup-dotnet@v5
+      with:
+        global-json-file: global.json
+    - name: Install CycloneDX tool
+      shell: bash
+      run: dotnet tool install -g CycloneDX --version ${{ inputs.cyclonedx-version }}

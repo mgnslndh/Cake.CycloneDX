@@ -19,10 +19,8 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - name: Install .NET SDK
-        uses: actions/setup-dotnet@v5
-        with:
-          global-json-file: global.json
+      - name: Set up .NET and CycloneDX
+        uses: ./.github/actions/setup-build
       - name: Build Cake.CycloneDX
         run: dotnet run --project build/Build.csproj -- --target All --verbosity Diagnostic
 
@@ -39,12 +37,8 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - name: Install .NET SDK
-        uses: actions/setup-dotnet@v5
-        with:
-          global-json-file: global.json
-      - name: Install CycloneDX tool
-        run: dotnet tool install -g CycloneDX --version 6.2.0
+      - name: Set up .NET and CycloneDX
+        uses: ./.github/actions/setup-build
       - name: Run runner tests (Cake ${{ matrix.cake }})
         run: dotnet run --project build/Build.csproj -- --target RunnerTests --cake-version "${{ matrix.cake }}" --verbosity Diagnostic
 
