@@ -7,9 +7,39 @@ using Cake.Core.IO;
 
 namespace Cake.CycloneDX.Tools.CdxRefine;
 
+/// <summary>
+/// Contains functionality for shaping the component set and dependency graph of a CycloneDX XML BOM, typically one
+/// produced by <c>CdxDotNet</c> and merged with <c>CdxCliMerge</c>.
+/// </summary>
+/// <remarks>
+/// <para>The steps run in this order, and a step without settings is skipped:</para>
+/// <list type="number">
+/// <item><description><b>Adopt</b> orphaned components into the dependency tree (<see cref="CdxRefineSettings.Adoptions"/>, <see cref="CdxRefineSettings.AdoptOrphanedComponents"/>).</description></item>
+/// <item><description><b>Exclude</b> matching components (<see cref="CdxRefineSettings.Exclusions"/>).</description></item>
+/// <item><description><b>Remove</b> components that are unreachable from the metadata component (<see cref="CdxRefineSettings.RemoveOrphanedComponents"/>).</description></item>
+/// <item><description><b>Group</b> and then <b>type</b> the remaining components (<see cref="CdxRefineSettings.GroupSettings"/>, <see cref="CdxRefineSettings.TypeSettings"/>).</description></item>
+/// </list>
+/// <para>Only the XML format is supported.</para>
+/// </remarks>
 [CakeAliasCategory("CycloneDX")]
 public static class CdxRefineAliases
 {
+    /// <summary>
+    /// Refines a CycloneDX BOM given as an XML string.
+    /// </summary>
+    /// <example>
+    /// <code>
+    /// var xml = System.IO.File.ReadAllText("./artifacts/bom.xml");
+    /// var refined = CdxRefine(xml, new CdxRefineSettings().WithExcludeByName("^xunit"));
+    /// </code>
+    /// </example>
+    /// <param name="context">The context.</param>
+    /// <param name="xml">The BOM as CycloneDX XML.</param>
+    /// <param name="settings">The settings, or <see langword="null"/> to leave the BOM unchanged.</param>
+    /// <returns>The refined BOM as CycloneDX XML.</returns>
+    /// <exception cref="System.Xml.XmlException"><paramref name="xml"/> is not well-formed XML.</exception>
+    /// <exception cref="InvalidOperationException">The BOM has no root element, or a component to group or type has no name or type.</exception>
+    /// <exception cref="CakeException">An adoption or orphan removal cannot be performed; the message explains why.</exception>
     [CakeMethodAlias]
     public static string CdxRefine(this ICakeContext context, string xml, CdxRefineSettings? settings = null)
     {
@@ -18,6 +48,33 @@ public static class CdxRefineAliases
         return document.ToString(SaveOptions.None);
     }
 
+    /// <summary>
+    /// Refines a CycloneDX XML BOM file and writes the result to another file.
+    /// </summary>
+    /// <remarks>
+    /// The output directory is created if it does not exist. The input and output paths may be the same file.
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// var settings = new CdxRefineSettings()
+    ///     .WithAdoptOrphanedComponents()
+    ///     .WithExcludeByName(@"^xunit(\..+)?$")
+    ///     .WithRemoveOrphanedComponents()
+    ///     .WithGroupByName("Test tools", "^xunit");
+    ///
+    /// CdxRefine("./artifacts/merged.xml", "./artifacts/bom.xml", settings);
+    /// </code>
+    /// </example>
+    /// <param name="context">The context.</param>
+    /// <param name="inputPath">The BOM file to read.</param>
+    /// <param name="outputPath">The file to write the refined BOM to.</param>
+    /// <param name="settings">The settings, or <see langword="null"/> to leave the BOM unchanged.</param>
+    /// <exception cref="ArgumentException"><paramref name="inputPath"/> or <paramref name="outputPath"/> is empty.</exception>
+    /// <exception cref="CakeException">
+    /// The input file does not exist, or an adoption or orphan removal cannot be performed; the message explains why.
+    /// </exception>
+    /// <exception cref="System.Xml.XmlException">The input file is not well-formed XML.</exception>
+    /// <exception cref="InvalidOperationException">The BOM has no root element, or a component to group or type has no name or type.</exception>
     [CakeMethodAlias]
     public static void CdxRefine(this ICakeContext context, FilePath inputPath, FilePath outputPath, CdxRefineSettings? settings = null)
     {
@@ -48,6 +105,21 @@ public static class CdxRefineAliases
         document.Save(writeStream);
     }
 
+    /// <summary>
+    /// Refines a CycloneDX XML BOM, modifying the document in place.
+    /// </summary>
+    /// <example>
+    /// <code>
+    /// var document = System.Xml.Linq.XDocument.Load("./artifacts/bom.xml");
+    /// CdxRefine(document, new CdxRefineSettings().WithTypeByName("framework", "^Microsoft\\.AspNetCore\\.App$"));
+    /// document.Save("./artifacts/bom.xml");
+    /// </code>
+    /// </example>
+    /// <param name="context">The context.</param>
+    /// <param name="document">The BOM to refine.</param>
+    /// <param name="settings">The settings, or <see langword="null"/> to leave the BOM unchanged.</param>
+    /// <exception cref="InvalidOperationException">The BOM has no root element, or a component to group or type has no name or type.</exception>
+    /// <exception cref="CakeException">An adoption or orphan removal cannot be performed; the message explains why.</exception>
     [CakeMethodAlias]
     public static void CdxRefine(this ICakeContext context, XDocument document, CdxRefineSettings? settings = null)
     {

@@ -6,7 +6,7 @@ namespace Cake.CycloneDX.Tests.Fixtures.Tools.CdxCli;
 internal abstract class CdxCliFixture<TSettings> : ToolFixture<TSettings> where TSettings : CdxCliSettings, new()
 {
     protected CdxCliFixture()
-        : base("cyclonedx.exe")
+        : base("cyclonedx")
     {
     }
 }

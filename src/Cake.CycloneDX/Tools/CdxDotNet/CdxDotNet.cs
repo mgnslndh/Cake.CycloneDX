@@ -5,7 +5,8 @@ using Cake.Core.Tooling;
 namespace Cake.CycloneDX.Tools.CdxDotNet;
 
 /// <summary>
-/// A .NET Core global tool which creates CycloneDX Software Bill-of-Materials (SBOM) from .NET projects.
+/// Runs the CycloneDX .NET tool (<c>dotnet-CycloneDX</c>), which creates CycloneDX Software Bill of Materials (SBOM)
+/// from .NET projects. Build scripts should use the <c>CdxDotNet</c> aliases instead.
 /// </summary>
 public class CdxDotNet : Tool<CdxDotNetSettings>
 {
@@ -43,6 +44,17 @@ public class CdxDotNet : Tool<CdxDotNetSettings>
         return ["dotnet-CycloneDX.exe", "dotnet-CycloneDX"];
     }
 
+    /// <summary>
+    /// Generates a CycloneDX SBOM for the given path. Build scripts should use the <c>CdxDotNet</c> aliases instead.
+    /// </summary>
+    /// <param name="path">
+    /// The path to a <c>.sln</c>, <c>.slnf</c>, <c>.slnx</c>, project or <c>packages.config</c> file, or to a directory
+    /// that is searched recursively for <c>packages.config</c> files.
+    /// </param>
+    /// <param name="settings">The settings.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="path"/> or <paramref name="settings"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentException"><paramref name="path"/> is empty.</exception>
+    /// <exception cref="CakeException">The CycloneDX .NET tool cannot be found or exits with a non-zero exit code.</exception>
     public void Run(string path, CdxDotNetSettings settings)
     {
         ArgumentNullException.ThrowIfNull(settings, nameof(settings));

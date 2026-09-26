@@ -2,7 +2,7 @@ using System.Runtime.InteropServices;
 using Cake.Common.Diagnostics;
 using Cake.Core;
 
-namespace Cake.CycloneDX.Dogfooding.Build.Tools;
+namespace Build.Tools;
 
 /// <summary>
 /// Ensures the CycloneDX CLI tool is available, downloading and verifying the correct

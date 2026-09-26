@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using Cake.Core;
 
-namespace Cake.CycloneDX.Dogfooding.Build.Tools;
+namespace Build.Tools;
 
 /// <summary>
 /// Registry of known CycloneDX CLI release manifests. Pre-registers a default manifest for

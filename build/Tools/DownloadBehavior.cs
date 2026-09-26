@@ -1,4 +1,4 @@
-namespace Cake.CycloneDX.Dogfooding.Build.Tools;
+namespace Build.Tools;
 
 /// <summary>
 /// Controls when a tool asset is downloaded.

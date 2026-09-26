@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using Cake.Core;
 
-namespace Cake.CycloneDX.Dogfooding.Build.Tools;
+namespace Build.Tools;
 
 /// <summary>
 /// Describes a single CycloneDX CLI asset for a specific platform.

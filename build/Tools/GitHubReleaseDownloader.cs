@@ -6,7 +6,7 @@ using Cake.Core;
 using Cake.Core.Diagnostics;
 using Cake.Core.IO;
 
-namespace Cake.CycloneDX.Dogfooding.Build.Tools;
+namespace Build.Tools;
 
 /// <summary>
 /// Downloads and verifies a single asset from a GitHub release.

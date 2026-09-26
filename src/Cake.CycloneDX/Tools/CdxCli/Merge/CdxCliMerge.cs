@@ -5,13 +5,34 @@ using Cake.CycloneDX.Tools.CdxCli.Validate;
 
 namespace Cake.CycloneDX.Tools.CdxCli.Merge;
 
+/// <summary>
+/// Runs the CycloneDX CLI <c>merge</c> command. Build scripts should use the
+/// <see cref="CdxCliAliases.CdxCliMerge"/> alias instead.
+/// </summary>
 public class CdxCliMerge : CdxCliTool<CdxCliMergeSettings>
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CdxCliMerge"/> class.
+    /// </summary>
+    /// <param name="fileSystem">The file system.</param>
+    /// <param name="environment">The environment.</param>
+    /// <param name="processRunner">The process runner.</param>
+    /// <param name="tools">The tool locator.</param>
     public CdxCliMerge(IFileSystem fileSystem, ICakeEnvironment environment, IProcessRunner processRunner, IToolLocator tools)
         : base(fileSystem, environment, processRunner, tools)
     {
     }
 
+    /// <summary>
+    /// Merges two or more CycloneDX BOMs into a single BOM.
+    /// </summary>
+    /// <param name="inputFilePaths">The BOM files to merge. Must contain at least one path.</param>
+    /// <param name="outputFilePath">The file to write the merged BOM to.</param>
+    /// <param name="settings">The settings.</param>
+    /// <exception cref="ArgumentNullException">An argument is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentException"><paramref name="inputFilePaths"/> is empty or contains an empty path, or <paramref name="outputFilePath"/> is empty.</exception>
+    /// <exception cref="InvalidOperationException">A hierarchical merge is requested without a name or a version.</exception>
+    /// <exception cref="CakeException">The CycloneDX CLI cannot be found or exits with a non-zero exit code.</exception>
     public void Merge(FilePathCollection inputFilePaths, FilePath outputFilePath, CdxCliMergeSettings settings)
     {
         ArgumentNullException.ThrowIfNull(inputFilePaths);
@@ -78,6 +99,11 @@ public class CdxCliMerge : CdxCliTool<CdxCliMergeSettings>
             }
 
             builder.Append("--hierarchical");
+        }
+
+        if (settings.Group is not null)
+        {
+            builder.AppendSwitchQuoted("--group", settings.Group);
         }
 
         if (settings.Name is not null)

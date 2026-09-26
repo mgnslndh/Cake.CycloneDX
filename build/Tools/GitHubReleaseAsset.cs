@@ -1,4 +1,4 @@
-namespace Cake.CycloneDX.Dogfooding.Build.Tools;
+namespace Build.Tools;
 
 /// <summary>
 /// Describes a single asset in a GitHub release.

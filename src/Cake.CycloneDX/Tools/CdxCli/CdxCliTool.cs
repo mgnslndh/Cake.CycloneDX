@@ -12,6 +12,9 @@ namespace Cake.CycloneDX.Tools.CdxCli;
 public abstract class CdxCliTool<TSettings> : Tool<TSettings>
     where TSettings : ToolSettings
 {
+    /// <summary>
+    /// Gets the Cake environment, used to determine the current platform.
+    /// </summary>
     protected ICakeEnvironment Environment { get; }
 
     /// <summary>
