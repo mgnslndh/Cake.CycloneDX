@@ -52,7 +52,8 @@ public abstract class CdxCliTool<TSettings> : Tool<TSettings>
         return
         [
             CdxCliExecutable.GetFilename(Environment.Platform.Family, RuntimeInformation.ProcessArchitecture),
-            "cyclonedx"
+            "cyclonedx",
+            "cyclonedx.exe"
         ];
     }
 }

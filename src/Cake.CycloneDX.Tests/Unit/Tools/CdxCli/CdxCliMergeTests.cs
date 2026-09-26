@@ -107,6 +107,25 @@ namespace Cake.CycloneDX.Tests.Unit.Tools.CdxCli
                 AssertEx.IsCakeException(result, "CycloneDX CLI: Could not locate executable.");
             }
 
+            [Theory]
+            [InlineData("cyclonedx")]
+            [InlineData("cyclonedx.exe")]
+            public void Should_Find_CdxCli_Executable_By_Generic_Name(string toolName)
+            {
+                // Given
+                var fixture = new CdxCliMergeFixture();
+                fixture.GivenDefaultToolDoNotExist();
+                var toolPath = new FilePath("/Working/tools/" + toolName);
+                fixture.FileSystem.CreateFile(toolPath);
+                fixture.Tools.RegisterFile(toolPath);
+
+                // When
+                var result = fixture.Run();
+
+                // Then
+                Assert.Equal(toolPath.FullPath, result.Path.FullPath);
+            }
+
             [Fact]
             public void Should_Throw_If_Process_Has_A_Non_Zero_Exit_Code()
             {
