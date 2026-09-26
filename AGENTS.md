@@ -28,8 +28,13 @@ How this repository applies them:
   assembly-level imports. `AliasNamespaceImportTests` enforces this.
 - **New namespaces:** add a `NamespaceDoc` class for them in `src/Cake.CycloneDX/Namespaces.cs`.
 - **Package metadata:** keep the `cake-addin` tag and the embedded icon in `src/Directory.Build.props`.
-- **Testing:** test aliases in the unit tests, and verify behavior across Cake runners and
-  operating systems as described in the best practices.
+- **Testing:** unit-test aliases in `src/Cake.CycloneDX.Tests`. Runner tests prove the packed package
+  works on the Cake .NET Tool, Cake.Sdk and Cake Frosting:
+  `.\build.ps1 --target RunnerTests` (latest Cake 6.x) and
+  `.\build.ps1 --target RunnerTests --cake-version 6.0.0` (lowest supported). Run both after changing
+  alias signatures, namespaces or package metadata. The scenario lives in `tests/runners/`; keep the
+  pipeline in `script/build.cake` and `sdk/cake.cs` identical after the `// --- pipeline ---` line.
+  CI runs them on Windows, Linux and macOS for both versions.
 
 ## Style and Analyzers
 
