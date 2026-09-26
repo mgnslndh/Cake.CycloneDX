@@ -94,7 +94,15 @@ That means:
 
 ## Release Notes Policy
 
-GitHub-generated release notes are acceptable by default, provided the repository follows the conventions below.
+`CHANGELOG.md` is the source of truth for release notes. It follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/):
+
+- Add user-visible changes to the `## [Unreleased]` section as they are merged, under `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed` or `Security`.
+- Leave out changes users can't see, such as CI, tests and internal build work.
+- Mark breaking changes with **Breaking:** and say how to update.
+- When releasing, rename `[Unreleased]` to `[X.Y.Z] - YYYY-MM-DD`, add a new empty `[Unreleased]` section and update the compare links at the bottom.
+- Use that version's section as the GitHub Release notes.
+
+GitHub-generated release notes can be used as a starting point, provided the repository follows the conventions below.
 
 Generated notes work best when:
 
