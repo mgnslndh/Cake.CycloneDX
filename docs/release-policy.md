@@ -123,13 +123,13 @@ Release notes should describe user-visible change, not list commits or pull requ
 1. Finalize version.
 2. Merge release-ready changes.
 3. In `CHANGELOG.md`, rename `[Unreleased]` to `[X.Y.Z] - YYYY-MM-DD`, add a new empty `[Unreleased]` section and update the compare links. Merge that change.
-4. Create tag `vX.Y.Z` on that commit and push it. The Release workflow builds, publishes the package and creates the GitHub Release with the CHANGELOG section as notes.
+4. Run `./release.ps1 X.Y.Z` (or `-Bump`/`-Promote`) on that commit. It creates and pushes the tag; the Release workflow builds, publishes the package and creates the GitHub Release with the CHANGELOG section as notes.
 
 ### Preview
 
 1. Choose preview version such as `X.Y.Z-preview.N`.
 2. Check that `[Unreleased]` in `CHANGELOG.md` describes the preview (or add a `[X.Y.Z-preview.N]` section).
-3. Create the matching tag and push it. The Release workflow publishes the package and a GitHub prerelease.
+3. Run `./release.ps1 -Bump Minor -Prerelease preview` (or `-Prerelease preview` for the next preview in a series). It creates and pushes the tag; the Release workflow publishes the package and a GitHub prerelease.
 
 ## Decision Rules
 
@@ -171,6 +171,7 @@ Unless explicitly decided otherwise:
 
 - Pull requests and pushes to `main` run `build --target All` (build, test, pack) and the runner tests on Cake 6.0.0 and 6.* on Windows, Linux and macOS.
 - The tag push is the review point: there is no manual step between pushing a `v*` tag and the package appearing on nuget.org with a GitHub (pre)release, so review the changes and the notes before tagging. A preview that should not get a GitHub Release (internal or CI-only) must not be tagged.
+- Create and push the tag with `./release.ps1` (PowerShell 7.2+, `git`, `gh` and the .NET SDK), e.g. `./release.ps1 -Bump Minor`, `./release.ps1 -Bump Minor -Prerelease preview` or `./release.ps1 -Promote`. Run it without arguments to see the latest release and suggested next versions; it changes nothing. With a version it checks the branch, working tree, CI status, tag uniqueness and the CHANGELOG gate (see Release Notes Policy), shows a summary and asks before tagging, then follows the Release workflow. Use `-WhatIf` for a dry run. Its version logic in `build/Release.psm1` is tested with Pester 5+: `Invoke-Pester ./tests/Release.Tests.ps1`.
 - Pushing a tag `vX.Y.Z` (or `vX.Y.Z-preview.N`) runs `.github/workflows/release.yml`: `Release-Notes` checks that `CHANGELOG.md` has notes for the tag, then the same `All` build and runner tests run, all in a job without write permissions, then — in a separate `publish` job that only receives the built package — the `Release` target, which runs three steps in this order:
   1. `Draft-Release` creates the GitHub Release as a **draft** (CHANGELOG notes, package attached; invisible to users). It refuses if there is no package whose version equals the tag.
   2. `Publish` pushes `artifacts/Cake.CycloneDX.X.Y.Z.nupkg` to nuget.org — the only irreversible step.
