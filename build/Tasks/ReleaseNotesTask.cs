@@ -5,10 +5,12 @@ using Cake.Frosting;
 namespace Build.Tasks;
 
 /// <summary>
-/// The release gate for CHANGELOG.md: checks that it is ready for the pushed tag and writes the tag's section to
-/// artifacts/release-notes.md as the GitHub Release notes. Fails when the section is missing, empty or not the
-/// newest version, or when [Unreleased] still has entries a stable release would leave out, so the release stops
-/// before anything is built or published. Requires GITHUB_REF_NAME. See <see cref="ChangelogReleaseNotes"/>.
+/// The release gate for the documentation that ships with a release. Checks that CHANGELOG.md is ready for the pushed
+/// tag and writes the tag's section to artifacts/release-notes.md as the GitHub Release notes. Fails when the section
+/// is missing, empty or not the newest version, or when [Unreleased] still has entries a stable release would leave
+/// out. For a stable tag it also fails when the README's install snippets name another version. The release stops
+/// before anything is built or published. Requires GITHUB_REF_NAME. See <see cref="ChangelogReleaseNotes"/> and
+/// <see cref="ReadmeInstallVersion"/>.
 /// </summary>
 [TaskName("Release-Notes")]
 public sealed class ReleaseNotesTask : FrostingTask<BuildContext>
@@ -16,8 +18,11 @@ public sealed class ReleaseNotesTask : FrostingTask<BuildContext>
     public override void Run(BuildContext context)
     {
         var tag = context.ReleaseTag;
-        var changelog = File.ReadAllText(context.Environment.WorkingDirectory.CombineWithFilePath("CHANGELOG.md").FullPath);
+        var root = context.Environment.WorkingDirectory;
+        var changelog = File.ReadAllText(root.CombineWithFilePath("CHANGELOG.md").FullPath);
         var notes = ChangelogReleaseNotes.Extract(changelog, tag);
+
+        ReadmeInstallVersion.Check(File.ReadAllText(root.CombineWithFilePath("README.md").FullPath), tag);
 
         context.EnsureDirectoryExists(context.ArtifactsDirectory);
         File.WriteAllText(context.ReleaseNotesFile.FullPath, notes + "\n");
