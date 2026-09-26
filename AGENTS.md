@@ -23,6 +23,9 @@ How this repository applies them:
   `net9.0` and `net10.0`) in the addin, test and helper projects.
 - **New aliases:** put them in a `static` class ending in `Aliases`, marked
   `[CakeAliasCategory("CycloneDX")]`, as `ICakeContext` extension methods marked `[CakeMethodAlias]`.
+  If an alias takes a type from a namespace other than its class's, add
+  `[CakeNamespaceImport("<namespace>")]` **on the method**. Cake.Sdk ignores class- and
+  assembly-level imports. `AliasNamespaceImportTests` enforces this.
 - **New namespaces:** add a `NamespaceDoc` class for them in `src/Cake.CycloneDX/Namespaces.cs`.
 - **Package metadata:** keep the `cake-addin` tag and the embedded icon in `src/Directory.Build.props`.
 - **Testing:** test aliases in the unit tests, and verify behavior across Cake runners and

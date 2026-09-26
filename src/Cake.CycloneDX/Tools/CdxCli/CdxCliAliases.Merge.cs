@@ -47,6 +47,7 @@ public static partial class CdxCliAliases
     /// <exception cref="InvalidOperationException">A hierarchical merge is requested without a name or a version.</exception>
     /// <exception cref="CakeException">The CycloneDX CLI cannot be found or exits with a non-zero exit code.</exception>
     [CakeMethodAlias]
+    [CakeNamespaceImport("Cake.CycloneDX.Tools.CdxCli.Merge")]
     public static void CdxCliMerge(this ICakeContext context, FilePathCollection inputFilePaths, FilePath outputFilePath, CdxCliMergeSettings? settings = null)
     {
         ArgumentNullException.ThrowIfNull(inputFilePaths);

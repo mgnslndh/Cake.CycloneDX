@@ -37,6 +37,7 @@ public static partial class CdxCliAliases
     /// <exception cref="ArgumentException"><paramref name="inputFilePaths"/> is empty or contains an empty path.</exception>
     /// <exception cref="CakeException">The CycloneDX CLI cannot be found or exits with a non-zero exit code.</exception>
     [CakeMethodAlias]
+    [CakeNamespaceImport("Cake.CycloneDX.Tools.CdxCli.Validate")]
     public static void CdxCliValidate(this ICakeContext context, FilePathCollection inputFilePaths, CdxCliValidateSettings? settings = null)
     {
         ArgumentNullException.ThrowIfNull(context);
@@ -73,6 +74,7 @@ public static partial class CdxCliAliases
     /// <exception cref="ArgumentException"><paramref name="inputFilePath"/> is empty.</exception>
     /// <exception cref="CakeException">The CycloneDX CLI cannot be found or exits with a non-zero exit code.</exception>
     [CakeMethodAlias]
+    [CakeNamespaceImport("Cake.CycloneDX.Tools.CdxCli.Validate")]
     public static void CdxCliValidate(this ICakeContext context, FilePath inputFilePath, CdxCliValidateSettings? settings = null)
     {
         ArgumentNullException.ThrowIfNull(context);
