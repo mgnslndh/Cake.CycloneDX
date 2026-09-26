@@ -9,6 +9,8 @@
 
   <ItemGroup>
     <PackageReference Include="Cake.Frosting" />
+    <!-- Cake.Frosting requires a newer Cake.Core than the addin targets; override only for this build tool. -->
+    <PackageReference Include="Cake.Core" VersionOverride="6.3.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -10,7 +10,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Cake.Frosting" Version="6.1.0" />
+    <PackageReference Include="Cake.Frosting" Version="6.3.0" />
     <PackageReference Include="MinVer" Version="7.0.0" />
   </ItemGroup>
   <Target Name="PostMinVer" AfterTargets="MinVer">
