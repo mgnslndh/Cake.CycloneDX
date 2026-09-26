@@ -16,7 +16,8 @@ public sealed class TestTask : FrostingTask<BuildContext>
         {
             Configuration = "Release",
             Verbosity = DotNetVerbosity.Minimal,
-            NoBuild = true
+            NoBuild = true,
+            PathType = DotNetTestPathType.Solution
         });
     }
 }
