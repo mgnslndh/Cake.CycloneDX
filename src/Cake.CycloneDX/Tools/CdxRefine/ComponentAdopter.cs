@@ -62,21 +62,23 @@ internal static class ComponentAdopter
             }
         }
 
-        if (!adoptOrphanedComponents)
+        if (adoptOrphanedComponents)
         {
-            return;
+            var remaining = orphans.Where(orphan => !adopted.Contains(orphan)).ToList();
+            if (remaining.Count > 0)
+            {
+                var metadata = ResolveMetadata(graph);
+                foreach (var orphan in remaining)
+                {
+                    AdoptInto(context, graph, orphan, metadata);
+                    adopted.Add(orphan);
+                }
+            }
         }
 
-        var remaining = orphans.Where(orphan => !adopted.Contains(orphan)).ToList();
-        if (remaining.Count == 0)
+        if (adopted.Count > 0)
         {
-            return;
-        }
-
-        var metadata = ResolveMetadata(graph);
-        foreach (var orphan in remaining)
-        {
-            AdoptInto(context, graph, orphan, metadata);
+            context.Log.Information("Adopted {0} components.", adopted.Count);
         }
     }
 
