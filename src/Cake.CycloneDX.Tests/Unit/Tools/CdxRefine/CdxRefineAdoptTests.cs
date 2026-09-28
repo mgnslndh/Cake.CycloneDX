@@ -331,6 +331,22 @@ public class CdxRefineAdoptTests
     }
 
     [Fact]
+    public void ShouldCountDuplicateBomRefOrphansOnceLikeTheVerboseLog()
+    {
+        var xml = TestSbom.Create(
+            Meta,
+            TestSbom.Component("a") + TestSbom.Component("dup", "Dup1") + TestSbom.Component("dup", "Dup2"),
+            TestSbom.Dependency("app", "a") + TestSbom.Dependency("a"));
+        var log = new FakeLog();
+
+        TestSbom.Refine(xml, new CdxRefineSettings().WithAdoptOrphanedComponents(), log);
+
+        // Invalid CycloneDX (bom-ref must be unique), so the SBOM is not validated. Both components share one edge.
+        Assert.Single(log.Entries, e => e.Level == LogLevel.Verbose && e.Message.StartsWith("Adopting component ", StringComparison.Ordinal));
+        Assert.Contains(log.Entries, e => e.Level == LogLevel.Information && e.Message == "Adopted 1 components.");
+    }
+
+    [Fact]
     public void ShouldNotLogAdoptedCountWhenNothingIsAdopted()
     {
         var xml = TestSbom.Create(

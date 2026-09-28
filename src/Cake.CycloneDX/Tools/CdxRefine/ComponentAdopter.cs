@@ -18,6 +18,10 @@ internal static class ComponentAdopter
         var orphanSet = new HashSet<XElement>(orphans);
         var adopted = new HashSet<XElement>();
 
+        // Counts the edges added, which is what the "Adopting component" lines report. Components with a duplicate
+        // bom-ref share one edge, so they can be in `adopted` without adding one.
+        var adoptedCount = 0;
+
         foreach (var rule in rules)
         {
             var candidates = new List<XElement>();
@@ -57,7 +61,11 @@ internal static class ComponentAdopter
                     continue;
                 }
 
-                AdoptInto(context, graph, orphan, parent);
+                if (AdoptInto(context, graph, orphan, parent))
+                {
+                    adoptedCount++;
+                }
+
                 adopted.Add(orphan);
             }
         }
@@ -70,15 +78,19 @@ internal static class ComponentAdopter
                 var metadata = ResolveMetadata(graph);
                 foreach (var orphan in remaining)
                 {
-                    AdoptInto(context, graph, orphan, metadata);
+                    if (AdoptInto(context, graph, orphan, metadata))
+                    {
+                        adoptedCount++;
+                    }
+
                     adopted.Add(orphan);
                 }
             }
         }
 
-        if (adopted.Count > 0)
+        if (adoptedCount > 0)
         {
-            context.Log.Information("Adopted {0} components.", adopted.Count);
+            context.Log.Information("Adopted {0} components.", adoptedCount);
         }
     }
 
@@ -132,7 +144,7 @@ internal static class ComponentAdopter
         return metadata;
     }
 
-    private static void AdoptInto(ICakeContext context, CdxDependencyGraph graph, XElement orphan, XElement parent)
+    private static bool AdoptInto(ICakeContext context, CdxDependencyGraph graph, XElement orphan, XElement parent)
     {
         var orphanBomRef = CdxDependencyGraph.GetBomRef(orphan)
             ?? throw new InvalidOperationException("An orphan always has a bom-ref.");
@@ -144,9 +156,12 @@ internal static class ComponentAdopter
             throw new CakeException($"Cannot adopt component '{orphanBomRef}' into '{parentBomRef}': '{parentBomRef}' is a dependency of '{orphanBomRef}', so the adoption would create a cycle.");
         }
 
-        if (graph.AddEdge(parentBomRef, orphanBomRef))
+        if (!graph.AddEdge(parentBomRef, orphanBomRef))
         {
-            context.Log.Verbose("Adopting component '{0}' ({1}) into '{2}' ({3})", graph.GetName(orphan), orphanBomRef, graph.GetName(parent), parentBomRef);
+            return false;
         }
+
+        context.Log.Verbose("Adopting component '{0}' ({1}) into '{2}' ({3})", graph.GetName(orphan), orphanBomRef, graph.GetName(parent), parentBomRef);
+        return true;
     }
 }
