@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `CdxRefine` logs how many components it adopted (`Adopted {n} components.`) at the default
+  verbosity, like it already does for excluded components. Each adoption is still logged at
+  `Verbose`.
+
 ## [0.1.0-preview.1] - 2026-09-26
 
 ### Added

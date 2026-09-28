@@ -313,4 +313,50 @@ public class CdxRefineAdoptTests
         Assert.Contains(log.Entries, e => e.Level == LogLevel.Verbose
             && e.Message == "Adopting component 'Project1' (p1) into 'Merged' (Merged@1.0)");
     }
+
+    [Fact]
+    public void ShouldLogAdoptedCountAtInformation()
+    {
+        var xml = TestSbom.Create(
+            Meta,
+            TestSbom.Component("a", "Alpha") + TestSbom.Component("b", "Beta") + TestSbom.Component("c", "Gamma"),
+            TestSbom.Dependency("app") + TestSbom.Dependency("a") + TestSbom.Dependency("b") + TestSbom.Dependency("c"));
+        var log = new FakeLog();
+
+        TestSbom.Refine(xml, new CdxRefineSettings().WithAdoptionByName("^Alpha$").WithAdoptOrphanedComponents(), log);
+
+        var entry = Assert.Single(log.Entries, e => e.Message.StartsWith("Adopted ", StringComparison.Ordinal));
+        Assert.Equal(LogLevel.Information, entry.Level);
+        Assert.Equal("Adopted 3 components.", entry.Message);
+    }
+
+    [Fact]
+    public void ShouldCountDuplicateBomRefOrphansOnceLikeTheVerboseLog()
+    {
+        var xml = TestSbom.Create(
+            Meta,
+            TestSbom.Component("a") + TestSbom.Component("dup", "Dup1") + TestSbom.Component("dup", "Dup2"),
+            TestSbom.Dependency("app", "a") + TestSbom.Dependency("a"));
+        var log = new FakeLog();
+
+        TestSbom.Refine(xml, new CdxRefineSettings().WithAdoptOrphanedComponents(), log);
+
+        // Invalid CycloneDX (bom-ref must be unique), so the SBOM is not validated. Both components share one edge.
+        Assert.Single(log.Entries, e => e.Level == LogLevel.Verbose && e.Message.StartsWith("Adopting component ", StringComparison.Ordinal));
+        Assert.Contains(log.Entries, e => e.Level == LogLevel.Information && e.Message == "Adopted 1 components.");
+    }
+
+    [Fact]
+    public void ShouldNotLogAdoptedCountWhenNothingIsAdopted()
+    {
+        var xml = TestSbom.Create(
+            Meta,
+            TestSbom.Component("a", "Alpha"),
+            TestSbom.Dependency("app", "a") + TestSbom.Dependency("a"));
+        var log = new FakeLog();
+
+        TestSbom.Refine(xml, new CdxRefineSettings().WithAdoptOrphanedComponents(), log);
+
+        Assert.DoesNotContain(log.Entries, e => e.Message.StartsWith("Adopted ", StringComparison.Ordinal));
+    }
 }
