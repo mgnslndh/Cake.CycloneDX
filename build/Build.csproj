@@ -12,6 +12,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Cake.Download.Module" Version="0.1.0-preview.2" />
     <PackageReference Include="Cake.Frosting" Version="6.3.0" />
     <PackageReference Include="MinVer" Version="8.0.0" />
   </ItemGroup>

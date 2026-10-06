@@ -4,8 +4,8 @@ description: Installs the .NET SDK from global.json and the CycloneDX .NET tool.
 
 inputs:
   cyclonedx-version:
-    # The CycloneDX CLI used by the runner tests is downloaded by the build itself; its version is in
-    # build/Tasks/RunnerTestsTask.cs.
+    # The CycloneDX CLI used by the runner tests is downloaded by the RunnerTests task (Cake.Download.Module's
+    # DownloadTool); its version and hashes are in build/Tasks/RunnerTestsTask.cs.
     description: Version of the CycloneDX .NET tool (dotnet tool install -g CycloneDX).
     default: 6.2.0
 
