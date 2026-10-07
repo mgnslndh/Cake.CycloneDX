@@ -1,11 +1,11 @@
 using System.Xml.Linq;
 using Build.RunnerTests;
-using Build.Tools;
 using Cake.Common;
 using Cake.Common.Diagnostics;
 using Cake.Common.IO;
 using Cake.Core;
 using Cake.Core.IO;
+using Cake.Download.Module;
 using Cake.Frosting;
 
 namespace Build.Tasks;
@@ -18,7 +18,7 @@ namespace Build.Tasks;
 [IsDependentOn(typeof(PackTask))]
 public sealed class RunnerTestsTask : FrostingTask<BuildContext>
 {
-    private const string CycloneDxCliVersion = "v0.30.0";
+    private const string CycloneDxCliVersion = "0.30.0";
 
     private static readonly IRunner[] Runners =
     [
@@ -44,8 +44,7 @@ public sealed class RunnerTestsTask : FrostingTask<BuildContext>
         context.Information("Runner tests: Cake {0}, Cake.CycloneDX {1}", cakeVersion, addinVersion);
 
         EnsureCycloneDxDotNetTool(context);
-        new CycloneDxCliDownloader(new CycloneDxReleaseManifestResolver()).Download(context, CycloneDxCliVersion);
-        var cliDirectory = new DirectoryPath(context.Configuration.GetValue("Paths_Tools")).MakeAbsolute(context.Environment);
+        var cliDirectory = DownloadCycloneDxCli(context);
 
         var runDirectory = root.Combine($"artifacts/runner-tests/{cakeVersion}");
         context.EnsureDirectoryExists(runDirectory);
@@ -164,6 +163,25 @@ public sealed class RunnerTestsTask : FrostingTask<BuildContext>
                 "The pipelines in tests/runners/script/build.cake and tests/runners/sdk/cake.cs differ. "
                 + $"Everything after '{ScriptTemplate.PipelineMarker}' must be identical.");
         }
+    }
+
+    private static DirectoryPath DownloadCycloneDxCli(ICakeContext context)
+    {
+        var files = context.DownloadTool(
+            package: "cyclonedx",
+            version: CycloneDxCliVersion,
+            url: "https://github.com/CycloneDX/cyclonedx-cli/releases/download/v{version}/cyclonedx-{rid}{exe}",
+            settings: new DownloadToolSettings()
+                .WithSha256("win-x64", "1f563ba9644d2f2966fc8029fd701ca4af4f388d44c017c1d60559a1ecc9114f")
+                .WithSha256("win-x86", "8eab8678920cd2688b717b2d8b784374bd6758f948d5ef2b3f5828def51b6fa2")
+                .WithSha256("linux-x64", "f89876326620f5fc78a9b27cc1af57d6ed13d019aab87490e1246a44a910babb")
+                .WithSha256("linux-arm64", "190da406177311aa1081edd0c717df10271eba7e4356a56215494a70e1a4b459")
+                .WithSha256("osx-x64", "1603264fd2968b8d617e48aa7e9cf17bee1d25a8ffe717aec37caf1605a21961")
+                .WithSha256("osx-arm64", "dabbaf07e543e7996f708147475e2daa69ddf8a8683c5b06febc7d3f074e5e24"));
+
+        var cli = files.Single();
+        context.Information("CycloneDX CLI: {0}", cli.FullPath);
+        return cli.GetDirectory();
     }
 
     private static void EnsureCycloneDxDotNetTool(ICakeContext context)
